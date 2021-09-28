@@ -6,6 +6,61 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:translationZ="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/hideFindingControlsBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:translationX="300dp"
+            android:translationY="75dp"
+            android:visibility="invisible"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/findPreviousBtn"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:text="^"
+            android:translationX="365dp"
+            android:translationY="325dp"
+            android:visibility="invisible"
+            app:cornerRadius="275dp"
+            tools:ignore="DuplicateClickableBoundsCheck,TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/findNextBtn"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:text="˅"
+            android:translationX="365dp"
+            android:translationY="375dp"
+            android:visibility="invisible"
+            app:cornerRadius="275dp"
+            tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FF0000"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:translationX="200dp"
+            android:translationY="175dp"
+            android:visibility="invisible"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
@@ -26,9 +81,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageButton
+                android:id="@+id/bookmarkAddBtn"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/star"
+                tools:ignore="SpeakableTextPresentCheck" />
+
             <EditText
                 android:id="@+id/keywords"
-                android:layout_width="325dp"
+                android:layout_width="215dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="#000000"
@@ -44,6 +108,15 @@
                 android:layout_weight="1"
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/search"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/refreshBtn"
+                android:layout_width="5dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/refresh"
                 tools:ignore="SpeakableTextPresentCheck" />
 
         </LinearLayout>

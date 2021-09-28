@@ -2,7 +2,11 @@ package com.example.browser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.icu.text.UnicodeSet;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -16,20 +20,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 public class MainActivity extends AppCompatActivity {
 
+    public SQLiteDatabase db;
     public Button rightArrowBtn;
     public Button leftArrowBtn;
     public View.OnClickListener rightArrowBtnListener;
     public View.OnClickListener leftArrowBtnListener;
+    public boolean findControlsVisible = false;
+    public Button findPreviousBtn;
+    public Button findNextBtn;
+    public EditText searchText;
+    public Button hideFindingControlsBtn;
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS tabs (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
 
         WebView myWebView = (WebView) findViewById(R.id.htmlContent);
         WebSettings webSettings = myWebView.getSettings();
@@ -56,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
 //                }
                 myWebView.loadUrl(searchKeywords);
 
+                db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+
                 if(myWebView.canGoBack()){
                     leftArrowBtn.setTextColor(Color.rgb(0, 0, 0));
                 }
@@ -68,7 +83,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
                 menu.add(Menu.NONE, 101, Menu.NONE, "Загрузки");
-                menu.add(Menu.NONE, 102, Menu.NONE, "Журнал");
+                MenuItem history = menu.add(Menu.NONE, 102, Menu.NONE, "Журнал");
+                history.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
                 menu.add(Menu.NONE, 103, Menu.NONE, "Сохранённые страницы");
                 menu.add(Menu.NONE, 104, Menu.NONE, "Добавить страницу");
                 menu.add(Menu.NONE, 105, Menu.NONE, "Поделиться");
@@ -78,7 +101,14 @@ public class MainActivity extends AppCompatActivity {
                 findOnPage.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        myWebView.findAllAsync("abc");
+
+                        searchText.setVisibility(View.VISIBLE);
+                        findPreviousBtn.setVisibility(View.VISIBLE);
+                        findNextBtn.setVisibility(View.VISIBLE);
+                        hideFindingControlsBtn.setVisibility(View.VISIBLE);
+
+                        myWebView.findAllAsync("язык");
+                        myWebView.findAllAsync(searchText.getText().toString());
                         return false;
                     }
                 });
@@ -94,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
         tabsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myWebView.loadUrl(keywords.getText().toString());
+                Intent intent = new Intent(MainActivity.this, TabsActivity.class);
+                MainActivity.this.startActivity(intent);
             }
         });
 
@@ -102,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
         bookmarkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myWebView.loadUrl(keywords.getText().toString());
+                Intent intent = new Intent(MainActivity.this, BookmarksActivity.class);
+                MainActivity.this.startActivity(intent);
             }
         });
 
@@ -115,6 +147,54 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton bookmarkAddBtn = findViewById(R.id.bookmarkAddBtn);
+        bookmarkAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.execSQL("INSERT INTO \"bookmarks\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+            }
+        });
+
+        ImageButton refreshBtn = findViewById(R.id.refreshBtn);
+        refreshBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myWebView.reload();
+                Log.d("mytag", "обновить страницу");
+            }
+        });
+
+        hideFindingControlsBtn = findViewById(R.id.hideFindingControlsBtn);
+        hideFindingControlsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("mytag", "cкрывай");
+                findPreviousBtn.setVisibility(View.INVISIBLE);
+                findNextBtn.setVisibility(View.INVISIBLE);
+                searchText.setVisibility(View.INVISIBLE);
+                hideFindingControlsBtn.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        findPreviousBtn = findViewById(R.id.findPreviousBtn);
+        findPreviousBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myWebView.findNext(false);
+            }
+        });
+
+        findNextBtn = findViewById(R.id.findNextBtn);
+        findNextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myWebView.findNext(true);
+            }
+        });
+
+        searchText = findViewById(R.id.searchText);
+
+        hideFindingControlsBtn.setText("<");
         leftArrowBtn = findViewById(R.id.leftArrowBtn);
         rightArrowBtn = findViewById(R.id.rightArrowBtn);
         leftArrowBtn.setText("<");
