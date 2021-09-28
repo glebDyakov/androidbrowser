@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">browser</string>
+    <string name="left_arrow_btn">Л</string>
+    <string name="right_arrow_btn">П</string>
 </resources>

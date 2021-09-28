@@ -67,21 +67,27 @@
             android:layout_height="50dp"
             android:orientation="horizontal">
 
-            <ImageButton
+
+            <Button
                 android:id="@+id/leftArrowBtn"
                 android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/arrowleft"
-                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                android:backgroundTint="#00FFFFFF"
+                android:foregroundTint="#000000"
+                android:textColor="#D7D7D7"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck" />
 
-            <ImageButton
+            <Button
                 android:id="@+id/rightArrowBtn"
                 android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/arrowright"
-                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                android:backgroundTint="#00FFFFFF"
+                android:textColor="#D7D7D7"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <ImageButton
                 android:id="@+id/homeBtn"
