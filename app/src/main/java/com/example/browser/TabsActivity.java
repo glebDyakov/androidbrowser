@@ -5,12 +5,18 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.w3c.dom.Text;
 
 public class TabsActivity extends AppCompatActivity {
 
@@ -42,5 +48,29 @@ public class TabsActivity extends AppCompatActivity {
                 tabs.moveToNext();
             }
         }
+
+        TextView tabAddBtn = findViewById(R.id.tabAddBtn);
+        tabAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        TextView dotDotDot = findViewById(R.id.dotDotDot);
+        dotDotDot.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                MenuItem clearTabsBtn = menu.add(Menu.NONE, 301, Menu.NONE, "Закрыть все вкладки");
+                clearTabsBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        db.execSQL("DELETE FROM tabs;");
+                        layoutOfTabs.removeAllViews();
+                        return false;
+                    }
+                });
+            }
+        });
     }
 }
