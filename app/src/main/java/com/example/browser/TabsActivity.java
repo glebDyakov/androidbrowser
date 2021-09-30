@@ -1,6 +1,7 @@
 package com.example.browser;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,29 +33,36 @@ public class TabsActivity extends AppCompatActivity {
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
         Cursor tabs = db.rawQuery("Select * from tabs", null);
         tabs.moveToFirst();
-        LinearLayout layoutOfTabs = findViewById(R.id.layoutOfBookmarks);
-        for (int tabIdx = 0; tabIdx < DatabaseUtils.queryNumEntries(db, "tabs"); tabIdx++) {
-            LinearLayout bookmarkLayout = new LinearLayout(TabsActivity.this);
-            ImageView bookmarkImg = new ImageView(TabsActivity.this);
-            bookmarkImg.setImageResource(R.drawable.star);
-            TextView bookmarkTitle = new TextView(TabsActivity.this);
-            bookmarkTitle.setText(tabs.getString(0));
-            TextView bookmarkUrl = new TextView(TabsActivity.this);
-            bookmarkUrl.setText(tabs.getString(1));
-            bookmarkLayout.addView(bookmarkImg);
-            bookmarkLayout.addView(bookmarkTitle);
-            bookmarkLayout.addView(bookmarkUrl);
-            layoutOfTabs.addView(bookmarkLayout);
-            if (tabIdx < DatabaseUtils.queryNumEntries(db, "tabs") - 1) {
-                tabs.moveToNext();
+        LinearLayout layoutOfTabs = findViewById(R.id.layoutOfTabs);
+        if(DatabaseUtils.queryNumEntries(db, "tabs") >= 1) {
+            for (int tabIdx = 0; tabIdx < DatabaseUtils.queryNumEntries(db, "tabs"); tabIdx++) {
+                LinearLayout tabLayout = new LinearLayout(TabsActivity.this);
+                ImageView tabImg = new ImageView(TabsActivity.this);
+                tabImg.setImageResource(R.drawable.star);
+                TextView tabTitle = new TextView(TabsActivity.this);
+                tabTitle.setText(tabs.getString(0));
+                TextView tabUrl = new TextView(TabsActivity.this);
+                tabUrl.setText(tabs.getString(1));
+                tabLayout.addView(tabImg);
+                tabLayout.addView(tabTitle);
+                tabLayout.addView(tabUrl);
+                layoutOfTabs.addView(tabLayout);
+                if (tabIdx < DatabaseUtils.queryNumEntries(db, "tabs") - 1) {
+                    tabs.moveToNext();
+                }
             }
+        } else {
+            LinearLayout tabLayout = new LinearLayout(TabsActivity.this);
+            TextView notFoundOfTabs = new TextView(TabsActivity.this);
+            notFoundOfTabs.setText("Вкладок Нет");
+            layoutOfTabs.addView(tabLayout);
         }
 
         TextView tabAddBtn = findViewById(R.id.tabAddBtn);
         tabAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                db.execSQL("INSERT INTO \"tabs\"(title, url) VALUES (\"" + "Google" + "\", \"" + "https://google.com" + "\");");
             }
         });
 
@@ -72,5 +81,15 @@ public class TabsActivity extends AppCompatActivity {
                 });
             }
         });
+
+        ImageButton exitBtn = findViewById(R.id.exitBtn);
+        exitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TabsActivity.this, MainActivity.class);
+                TabsActivity.this.startActivity(intent);
+            }
+        });
+
     }
 }

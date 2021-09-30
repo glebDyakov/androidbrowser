@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -78,6 +80,15 @@ public class HistoryActivity extends AppCompatActivity {
                 HistoryActivity.this.startActivity(intent);
             }
         });
+
+        TextView historyLabel = findViewById(R.id.historyLabel);
+//        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
+//        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/otfs/fontawesome.otf");
+        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
+        historyLabel.setTextColor(Color.rgb(255, 0, 0));
+        historyLabel.setTextSize(125f);
+        historyLabel.setTypeface(fontAwesome);
+        historyLabel.setText("\uF0C0");
 
     }
 }

@@ -1,6 +1,7 @@
 package com.example.browser;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +10,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -69,6 +71,14 @@ public class DownloadsActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton feedback = findViewById(R.id.feedback);
+        feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DownloadsActivity.this, MainActivity.class);
+                DownloadsActivity.this.startActivity(intent);
+            }
+        });
 
     }
 
