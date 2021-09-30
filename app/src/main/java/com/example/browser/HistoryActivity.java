@@ -33,22 +33,24 @@ public class HistoryActivity extends AppCompatActivity {
         Cursor historyRecords = db.rawQuery("Select * from history", null);
         historyRecords.moveToFirst();
         LinearLayout layoutOfHistoryRecords = findViewById(R.id.layoutOfHistoryRecords);
-        while (true) {
-            LinearLayout historyRecordLayout = new LinearLayout(HistoryActivity.this);
-            ImageView historyRecordImg = new ImageView(HistoryActivity.this);
-            historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-            historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
-            historyRecordImg.setImageResource(R.drawable.star);
-            TextView historyRecordTitle = new TextView(HistoryActivity.this);
-            historyRecordTitle.setText(historyRecords.getString(1));
-            TextView historyRecordUrl = new TextView(HistoryActivity.this);
-            historyRecordUrl.setText(historyRecords.getString(2));
-            historyRecordLayout.addView(historyRecordImg);
-            historyRecordLayout.addView(historyRecordTitle);
-            historyRecordLayout.addView(historyRecordUrl);
-            layoutOfHistoryRecords.addView(historyRecordLayout);
-            if(!historyRecords.moveToNext()){
-                break;
+        if(DatabaseUtils.queryNumEntries(db, "history") >= 1) {
+            while (true) {
+                LinearLayout historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                ImageView historyRecordImg = new ImageView(HistoryActivity.this);
+                historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
+                historyRecordImg.setImageResource(R.drawable.star);
+                TextView historyRecordTitle = new TextView(HistoryActivity.this);
+                historyRecordTitle.setText(historyRecords.getString(1));
+                TextView historyRecordUrl = new TextView(HistoryActivity.this);
+                historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(historyRecordImg);
+                historyRecordLayout.addView(historyRecordTitle);
+                historyRecordLayout.addView(historyRecordUrl);
+                layoutOfHistoryRecords.addView(historyRecordLayout);
+                if (!historyRecords.moveToNext()) {
+                    break;
+                }
             }
         }
 
@@ -68,7 +70,7 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton cancelBtn = findViewById(R.id.backBtn);
+        ImageButton cancelBtn = findViewById(R.id.cancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

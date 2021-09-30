@@ -13,12 +13,19 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,12 +50,20 @@ public class MainActivity extends AppCompatActivity {
         db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS tabs (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, useragent TEXT, contentDisposition TEXT, mimetype TEXT, contentlength INTEGER);");
 
         WebView myWebView = (WebView) findViewById(R.id.htmlContent);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.loadUrl("https://google.com");
+
+        myWebView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                db.execSQL("INSERT INTO \"history\"(url, useragent, contentdisposition, mimetype, contentlength) VALUES (\"" + url + "\", \"" + userAgent + "\", \"" + contentDisposition + "\", \"" + mimetype + "\", " + contentLength);
+            }
+        });
 
         EditText keywords = findViewById(R.id.keywords);
         ImageButton searchBtn = findViewById(R.id.searchBtn);
@@ -58,16 +73,29 @@ public class MainActivity extends AppCompatActivity {
 
                 String searchKeywords = keywords.getText().toString();
 //                try {
-//                    InetAddress ip = InetAddress.getByName(searchKeywords);
+//                    InetAddress ip = InetAddress.getByName(new URL(searchKeywords).getHost());
 //                    searchKeywords = keywords.getText().toString();
 //                    Log.d("mytag", "ищу по хосту");
-//                    myWebView.loadUrl(searchKeywords);
-//                } catch (UnknownHostException e) {
+////                    myWebView.loadUrl(searchKeywords);
+//                } catch(UnknownHostException e) {
 //                    searchKeywords = "https://yandex.ru/search/?lr=10765&text=" + keywords.getText().toString();
 //                    Log.d("mytag", "ищу по поиску");
-//                    myWebView.loadUrl(searchKeywords);
+//                } catch (MalformedURLException e) {
+//                    searchKeywords = "https://yandex.ru/search/?lr=10765&text=" + keywords.getText().toString();
+//                    Log.d("mytag", "ищу по поиску");
+//                } catch (Exception e){
+//                    Log.d("mytag", e.getClass().toString());
 //                }
-                myWebView.loadUrl(searchKeywords);
+
+                String rightUrl = keywords.getText().toString();
+                try {
+                    rightUrl = new HostCheckTask().execute(keywords.getText().toString()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    Log.d("mytag", "ошибка AsyncTask");
+                }
+                myWebView.loadUrl(rightUrl);
 
                 db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
 
@@ -82,7 +110,15 @@ public class MainActivity extends AppCompatActivity {
         burgerBtn.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(Menu.NONE, 101, Menu.NONE, "Загрузки");
+                MenuItem downloads = menu.add(Menu.NONE, 101, Menu.NONE, "Загрузки");
+                downloads.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, DownloadsActivity.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
                 MenuItem history = menu.add(Menu.NONE, 102, Menu.NONE, "Журнал");
                 history.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override

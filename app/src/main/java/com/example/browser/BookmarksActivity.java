@@ -46,11 +46,10 @@ public class BookmarksActivity extends AppCompatActivity {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
                 menu.add(Menu.NONE, 101, Menu.NONE, "Блокировка рекламы");
-                MenuItem clearHistoryBtn = menu.add(Menu.NONE, 102, Menu.NONE, "Найти на странице");
-                clearHistoryBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                MenuItem findBookmarks = menu.add(Menu.NONE, 102, Menu.NONE, "Найти на странице");
+                findBookmarks.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        db.execSQL("DELETE FROM ");
                         return false;
                     }
                 });

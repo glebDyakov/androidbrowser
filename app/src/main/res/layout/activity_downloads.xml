@@ -7,46 +7,48 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="75dp"
+        android:layout_height="125dp"
         android:orientation="horizontal"
-        android:translationY="75dp"
-        app:layout_constraintBottom_toTopOf="@+id/layoutOfBookmarks"
+        android:translationY="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/layoutOfDownloads"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/backBtn"
-            android:layout_width="0dp"
+            android:id="@+id/feedback"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:srcCompat="@drawable/arrowleft"
             tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/activityTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Закладки"
+            android:text="Загрузки"
             android:textSize="24sp" />
 
-        <ImageView
-            android:id="@+id/shareBtn"
+        <ImageButton
+            android:id="@+id/imageButton3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            app:srcCompat="@drawable/share" />
+            app:srcCompat="@drawable/share"
+            tools:ignore="SpeakableTextPresentCheck" />
 
-        <ImageView
-            android:id="@+id/srchBtn"
+        <ImageButton
+            android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            app:srcCompat="@drawable/search" />
+            app:srcCompat="@drawable/search"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
-            android:id="@+id/tripleDot"
+            android:id="@+id/dotmenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -57,15 +59,13 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutOfBookmarks"
+        android:id="@+id/layoutOfDownloads"
         android:layout_width="match_parent"
-        android:layout_height="550dp"
+        android:layout_height="475dp"
         android:orientation="vertical"
         android:translationY="75dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
