@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -14,6 +17,7 @@ import android.icu.text.UnicodeSet;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -21,6 +25,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.DownloadListener;
+import android.webkit.MimeTypeMap;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -38,6 +43,9 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public ImageButton bookmarkAddBtn;
+    public String url;
+    public long downloadReference;
     public DownloadManager downloadManager;
     public SQLiteDatabase db;
     public Button rightArrowBtn;
@@ -56,39 +64,45 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        searchText = findViewById(R.id.searchText);
+
+        BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+            public void onReceive(Context ctxt, Intent intent) {
+                Log.d("mytag", "загрузка завершена");
+                try {
+                    ParcelFileDescriptor pfl = downloadManager.openDownloadedFile(downloadReference);
+    //                db.execSQL("INSERT INTO \"downloads\"(url) VALUES (\"" + url + "\")");
+                    db.execSQL("INSERT INTO \"downloads\"(url, contentlength) VALUES (\"" + url + "\"," + pfl.getStatSize() + ")");
+//                    String mimetype = getMimeType(url);
+//                    db.execSQL("INSERT INTO \"downloads\"(url, contentlength, mime) VALUES (\"" + url + "\"," + pfl.getStatSize() + "\"" + mimetype + "\")");
+
+                    Log.d("mytag", "файл есть");
+                } catch (FileNotFoundException e) {
+                    Log.d("mytag", "файла нет");
+                }
+
+                DownloadManager.Query myDownloadQuery = new DownloadManager.Query();
+                myDownloadQuery.setFilterById(downloadReference);
+                Cursor cursor = downloadManager.query(myDownloadQuery);
+                if(cursor.moveToFirst()){
+                    downloadManager.remove(downloadReference);
+                }
+            }
+        };
+        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
         db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS tabs (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+
+//        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT);");
 //        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, useragent TEXT, contentDisposition TEXT, mimetype TEXT, contentlength INTEGER);");
-        db.execSQL("DROP TABLE IF EXISTS downloads");
-        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT);");
+//        db.execSQL("DROP TABLE IF EXISTS downloads");
+        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, contentlength INTEGER);");
+//        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, contentlength INTEGER, mime TEXT);");
 
         WebView myWebView = (WebView) findViewById(R.id.htmlContent);
-//        DetectedWebView myWebView = new DetectedWebView(MainActivity.this);
-
-        Log.d("mytag", "node element: " + String.valueOf(myWebView.getHitTestResult().getType()).contains(String.valueOf(myWebView.getHitTestResult().IMAGE_TYPE)));
-        myWebView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Log.d("mytag", "node element: " + String.valueOf(myWebView.getHitTestResult().getType()).contains(String.valueOf(myWebView.getHitTestResult().IMAGE_TYPE)));
-            }
-        });
-
-//        myWebView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                Log.d("mytag", "node element: " + String.valueOf(myWebView.getHitTestResult().getType()).contains(String.valueOf(myWebView.getHitTestResult().IMAGE_TYPE)));
-//            }
-//        });
-
-//        myWebView.evaluateJavascript("document.body.onclick = function() { alert('click'); };\n" +
-//                "document.body.onfocusout = function() { alert('focus'); };", new ValueCallback<String>() {
-//            @Override
-//            public void onReceiveValue(String value) {
-//                Log.d("mytag", "focusChange: " + value);
-//            }
-//        });
 
         myWebView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -98,32 +112,34 @@ public class MainActivity extends AppCompatActivity {
                     v.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                         @Override
                         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//                            MenuItem downloadBtn = menu.add(Menu.NONE, 401, Menu.NONE, "Загрузки");
                             MenuItem downloadBtn = menu.add(Menu.NONE, 501, Menu.NONE, "Скачать");
                             downloadBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
+                                    url = myWebView.getHitTestResult().getExtra();
                                     Log.d("mytag", "Рисуем контекстное меню на картинке: " + String.valueOf(myWebView.getHitTestResult().getExtra()));
                                     downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
                                     Uri Download_Uri = Uri.parse(String.valueOf(myWebView.getHitTestResult().getExtra()));
                                     DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
                                     request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
                                     request.setAllowedOverRoaming(false);
-                                    request.setTitle("My Data Download");
-                                    request.setDescription("Android Data download using DownloadManager.");
-//                    request.setDestinationInExternalFilesDir(MainActivity.this, Environment.DIRECTORY_DOWNLOADS,"abc.png");
-                                    request.setDestinationInExternalFilesDir(getApplicationContext(), getCacheDir().getPath(),"abc.png");
+                                    request.setTitle("Изображение загружено.");
+                                    request.setDescription("Загружено новое изображение.");
+
+                                    request.setDestinationInExternalFilesDir(MainActivity.this, Environment.DIRECTORY_DOWNLOADS,"abc.png");
+//                                    request.setDestinationInExternalFilesDir(getApplicationContext(), getCacheDir().getPath(),"abc.png");
+
                                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                                     request.setVisibleInDownloadsUi(true);
-                                    long downloadReference = downloadManager.enqueue(request);
+                                    downloadReference = downloadManager.enqueue(request);
                                     Log.d("mytag", "поставил закачку");
-                                    try {
-                                        downloadManager.openDownloadedFile(downloadReference);
-                                        Log.d("mytag", "файл есть");
-                                    } catch (FileNotFoundException e) {
-                                        Log.d("mytag", "файла нет");
-                                    }
-                                    db.execSQL("INSERT INTO \"downloads\"(url) VALUES (\"" + Download_Uri + "\"");
+//                                    try {
+//                                        downloadManager.openDownloadedFile(downloadReference);
+//                                        Log.d("mytag", "файл есть");
+//                                    } catch (FileNotFoundException e) {
+//                                        Log.d("mytag", "файла нет");
+//                                    }
+//                                    db.execSQL("INSERT INTO \"downloads\"(url) VALUES (\"" + url + "\")");
 //                                    DownloadManager.Query myDownloadQuery = new DownloadManager.Query();
 //                                    myDownloadQuery.setFilterById(downloadReference);
 //                                    Cursor cursor = downloadManager.query(myDownloadQuery);
@@ -154,7 +170,10 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+
         myWebView.setWebViewClient(new WebViewClient());
+//        myWebView.setWebViewClient(new DetectedWebViewClient(searchText, bookmarkAddBtn));
+
         myWebView.loadUrl("https://google.com");
 
         myWebView.setDownloadListener(new DownloadListener() {
@@ -202,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
                     leftArrowBtn.setTextColor(Color.rgb(0, 0, 0));
                 }
 
+                isBookmarkPage(myWebView.getUrl());
+
             }
         });
 
@@ -244,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
                         myWebView.findAllAsync("язык");
                         myWebView.findAllAsync(searchText.getText().toString());
+
                         return false;
                     }
                 });
@@ -282,11 +304,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton bookmarkAddBtn = findViewById(R.id.bookmarkAddBtn);
+        bookmarkAddBtn = findViewById(R.id.bookmarkAddBtn);
         bookmarkAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 db.execSQL("INSERT INTO \"bookmarks\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+                bookmarkAddBtn.setImageResource(R.drawable.star);
             }
         });
 
@@ -327,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        searchText = findViewById(R.id.searchText);
+//        searchText = findViewById(R.id.searchText);
 
         hideFindingControlsBtn.setText("<");
         leftArrowBtn = findViewById(R.id.leftArrowBtn);
@@ -346,6 +369,9 @@ public class MainActivity extends AppCompatActivity {
                     leftArrowBtn.setTextColor(Color.rgb(0, 0, 0));
 //                    leftArrowBtn.setOnClickListener(null);
                 }
+
+                isBookmarkPage(myWebView.getUrl());
+
             }
         };
         leftArrowBtnListener = new View.OnClickListener() {
@@ -360,6 +386,9 @@ public class MainActivity extends AppCompatActivity {
                     rightArrowBtn.setTextColor(Color.rgb(0, 0, 0));
 //                    rightArrowBtn.setOnClickListener(null);
                 }
+
+                isBookmarkPage(myWebView.getUrl());
+
             }
         };
 
@@ -367,4 +396,29 @@ public class MainActivity extends AppCompatActivity {
         leftArrowBtn.setOnClickListener(leftArrowBtnListener);
 
     }
+
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
+    public void isBookmarkPage(String currentUrl) {
+        bookmarkAddBtn.setImageResource(R.drawable.emptystar);
+        Cursor bookmarks = db.rawQuery("Select * from bookmarks", null);
+        bookmarks.moveToFirst();
+        while (true) {
+            if (bookmarks.getString(2).contains(currentUrl)) {
+                bookmarkAddBtn.setImageResource(R.drawable.star);
+                break;
+            }
+            if (!bookmarks.moveToNext()) {
+                break;
+            }
+        }
+    }
+
 }

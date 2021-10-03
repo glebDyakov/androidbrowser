@@ -83,12 +83,10 @@ public class HistoryActivity extends AppCompatActivity {
 
         TextView historyLabel = findViewById(R.id.historyLabel);
 //        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
-//        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/otfs/fontawesome.otf");
-        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
-        historyLabel.setTextColor(Color.rgb(255, 0, 0));
-        historyLabel.setTextSize(125f);
-        historyLabel.setTypeface(fontAwesome);
-        historyLabel.setText("\uF0C0");
+//        historyLabel.setTextColor(Color.rgb(255, 0, 0));
+//        historyLabel.setTextSize(125f);
+//        historyLabel.setTypeface(fontAwesome);
+//        historyLabel.setText("\uF0C0");
 
     }
 }

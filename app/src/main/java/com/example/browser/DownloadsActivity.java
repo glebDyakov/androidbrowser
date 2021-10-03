@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,16 +36,45 @@ public class DownloadsActivity extends AppCompatActivity {
             while (true) {
                 LinearLayout downloadLayout = new LinearLayout(DownloadsActivity.this);
                 downloadLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
-                TextView downloadType = new TextView(DownloadsActivity.this);
+
+//                TextView downloadType = new TextView(DownloadsActivity.this);
+                ImageView downloadType = new ImageView(DownloadsActivity.this);
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(300, 250);
+                layoutParams.setMarginEnd(250);
+                downloadType.setLayoutParams(layoutParams);
+
                 TextView downloadUrl = new TextView(DownloadsActivity.this);
+
+                downloadUrl.setLayoutParams(layoutParams);
+
                 TextView downloadSize = new TextView(DownloadsActivity.this);
-                downloadType.setText(downloads.getString(4));
-                downloadUrl.setText(downloads.getString(1));
-                downloadSize.setText(downloads.getString(5));
+
+                downloadSize.setLayoutParams(layoutParams);
+
+//                downloadType.setText(downloads.getString(4));
+//                downloadType.setText(downloads.getString(3));
+//                downloadType.setText("image");
+                downloadType.setImageResource(R.drawable.star);
+                downloadType.setScaleType(ImageView.ScaleType.FIT_START);
+
+                if(downloads.getString(1).length() > 30){
+                    downloadUrl.setText(downloads.getString(1).substring(0, 30));
+                } else {
+                    downloadUrl.setText(downloads.getString(1));
+                }
+
+
+//                downloadSize.setText(downloads.getString(5));
+                downloadSize.setText(String.valueOf(downloads.getInt(2)));
+
                 downloadLayout.addView(downloadType);
                 downloadLayout.addView(downloadUrl);
                 downloadLayout.addView(downloadSize);
                 layoutOfDownloads.addView(downloadLayout);
+                if(!downloads.moveToNext()){
+                    break;
+                }
             }
         } else {
             LinearLayout downloadLayout = new LinearLayout(DownloadsActivity.this);
