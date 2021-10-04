@@ -12,7 +12,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -25,10 +27,12 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.DownloadListener;
 import android.webkit.MimeTypeMap;
 import android.webkit.ValueCallback;
@@ -39,6 +43,9 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
@@ -50,6 +57,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public String progressBarDirection = "right";
+    public float previousCoordX = 0f;
     public int fontSize = 0;
     public String previousFindingSearch;
     public EditText keywords;
@@ -105,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
         db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS tabs (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS usercache (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value TEXT);");
+
+        if(DatabaseUtils.queryNumEntries(db, "usercache") <= 0) {
+            db.execSQL("INSERT INTO \"usercache\"(name, value) VALUES (\"fontsize\", 100);");
+        }
 
 //        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT);");
 //        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, useragent TEXT, contentDisposition TEXT, mimetype TEXT, contentlength INTEGER);");
@@ -335,12 +349,66 @@ public class MainActivity extends AppCompatActivity {
                 });
                 MenuItem pcVersionBtn = menu.add(Menu.NONE, 108, Menu.NONE, "Версия для ПК");
                 MenuItem fontSizeBtn = menu.add(Menu.NONE, 109, Menu.NONE, "Размер шрифта");
-
                 fontSizeBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                        LinearLayout.LayoutParams fontSizeLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
+
                         builder.setTitle("Размер шрифта");
+                        LinearLayout fontSizeLayout = new LinearLayout(MainActivity.this);
+                        fontSizeLayout.setOrientation(LinearLayout.VERTICAL);
+                        TextView fontSizePercent = new TextView(MainActivity.this);
+                        fontSizePercent.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        fontSizePercent.setLayoutParams(fontSizeLayoutParams);
+                        fontSizePercent.setText("100%");
+//                        builder.setView(fontSizePercent);
+//                        TextView fontSizeProgressBar = new TextView(MainActivity.this);
+                        ProgressBar fontSizeProgressBar = new ProgressBar(MainActivity.this, null, 0, R.style.Widget_AppCompat_ProgressBar_Horizontal);
+                        fontSizeProgressBar.setMin(50);
+                        fontSizeProgressBar.setProgress(100);
+                        fontSizeProgressBar.setMax(200);
+                        fontSizeProgressBar.setLayoutParams(fontSizeLayoutParams);
+                        fontSizeProgressBar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String[] percents = fontSizePercent.getText().toString().split("%");
+                                if(fontSizeProgressBar.getProgress() < 200 && progressBarDirection.contains("right")) {
+                                    fontSizePercent.setText(String.valueOf(Integer.valueOf(percents[0]) + 1) + "%");
+                                    fontSizeProgressBar.setProgress(fontSizeProgressBar.getProgress() + 1);
+                                    if(String.valueOf(fontSizeProgressBar.getProgress()).contains(String.valueOf(200))){
+                                        progressBarDirection = "left";
+                                    }
+                                } else if(fontSizeProgressBar.getProgress() > 50 && progressBarDirection.contains("left")) {
+                                    fontSizePercent.setText(String.valueOf(Integer.valueOf(percents[0]) - 1) + "%");
+                                    fontSizeProgressBar.setProgress(fontSizeProgressBar.getProgress() - 1);
+                                    if(String.valueOf(50).contains(String.valueOf(fontSizeProgressBar.getProgress()))){
+                                        progressBarDirection = "right";
+                                    }
+                                }
+                            }
+                        });
+//                        fontSizeLayout.setOnDragListener(new View.OnDragListener() {
+//                            @Override
+//                            public boolean onDrag(View v, DragEvent event) {
+//                                String[] percents = fontSizePercent.getText().toString().split("%");
+//                                if(event.getX() > previousCoordX){
+//                                    fontSizePercent.setText(String.valueOf(Integer.valueOf(percents[0]) + 1) + "%");
+//                                    fontSizeProgressBar.setProgress(fontSizeProgressBar.getProgress() + 1);
+//                                } else if(event.getX() < previousCoordX){
+//                                    fontSizePercent.setText(String.valueOf(Integer.valueOf(percents[0]) - 1) + "%");
+//                                    fontSizeProgressBar.setProgress(fontSizeProgressBar.getProgress() - 1);
+//                                }
+//                                previousCoordX = event.getX();
+//                                return false;
+//                            }
+//                        });
+
+                        fontSizeLayout.addView(fontSizePercent);
+                        fontSizeLayout.addView(fontSizeProgressBar);
+                        builder.setView(fontSizeLayout);
                         builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 fontSize = 0;
@@ -348,9 +416,11 @@ public class MainActivity extends AppCompatActivity {
                         });
                         builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
                             }
                         });
+
+//                        builder.setView(R.layout.dialog_fontsize);
+
                         AlertDialog dialog = builder.create();
                         dialog.show();
                         return false;
