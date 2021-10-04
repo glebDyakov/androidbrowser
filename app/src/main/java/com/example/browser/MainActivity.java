@@ -1,6 +1,7 @@
 package com.example.browser;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -11,10 +12,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.icu.text.UnicodeSet;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -27,12 +30,14 @@ import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.MimeTypeMap;
 import android.webkit.ValueCallback;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.net.InetAddress;
@@ -43,6 +48,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public String previousFindingSearch;
+    public EditText keywords;
     public ImageButton bookmarkAddBtn;
     public String url;
     public long downloadReference;
@@ -171,8 +178,57 @@ public class MainActivity extends AppCompatActivity {
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        myWebView.setWebViewClient(new WebViewClient());
+//        myWebView.setWebViewClient(new WebViewClient());
 //        myWebView.setWebViewClient(new DetectedWebViewClient(searchText, bookmarkAddBtn));
+        myWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                Log.d("mytag", "onPageStarted: with url " + url);
+
+                db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+
+                isBookmarkPage(url);
+
+                if(myWebView.canGoBack()){
+                    leftArrowBtn.setTextColor(Color.rgb(0, 0, 0));
+                }
+
+                keywords.setText(myWebView.getTitle().toString());
+
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Log.d("mytag", "onPageFinished: for " + url);
+            }
+
+            @Override
+            public void onPageCommitVisible(WebView view, String url) {
+                super.onPageCommitVisible(view, url);
+                Log.d("mytag", "onPageCommitVisible: for " + url);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Log.d("mytag", "shouldOverrideUrlLoading: for " + url);
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Log.d("mytag", "shouldOverrideUrlLoading: for " +  request.getUrl());
+                return super.shouldOverrideUrlLoading(view, request);
+            }
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+                Log.d("mytag", "onLoadResource: " + url);
+            }
+        });
 
         myWebView.loadUrl("https://google.com");
 
@@ -183,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        EditText keywords = findViewById(R.id.keywords);
+        keywords = findViewById(R.id.keywords);
         ImageButton searchBtn = findViewById(R.id.searchBtn);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,15 +313,20 @@ public class MainActivity extends AppCompatActivity {
                 findOnPage.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        if(String.valueOf(hideFindingControlsBtn.getVisibility()).contains(String.valueOf(View.INVISIBLE))) {
+                            searchText.setVisibility(View.VISIBLE);
+                            findPreviousBtn.setVisibility(View.VISIBLE);
+                            findNextBtn.setVisibility(View.VISIBLE);
+                            hideFindingControlsBtn.setVisibility(View.VISIBLE);
 
-                        searchText.setVisibility(View.VISIBLE);
-                        findPreviousBtn.setVisibility(View.VISIBLE);
-                        findNextBtn.setVisibility(View.VISIBLE);
-                        hideFindingControlsBtn.setVisibility(View.VISIBLE);
-
-                        myWebView.findAllAsync("язык");
-                        myWebView.findAllAsync(searchText.getText().toString());
-
+                            //                        myWebView.findAllAsync("язык");
+                            myWebView.findAllAsync(searchText.getText().toString());
+                            previousFindingSearch = searchText.getText().toString();
+                        } else {
+                            String toastMessage = "Поиск уже включен, сперва отключите его";
+                            Toast toast = Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                         return false;
                     }
                 });
@@ -331,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
                 findNextBtn.setVisibility(View.INVISIBLE);
                 searchText.setVisibility(View.INVISIBLE);
                 hideFindingControlsBtn.setVisibility(View.INVISIBLE);
+                myWebView.findAllAsync("");
             }
         });
 
@@ -338,7 +400,11 @@ public class MainActivity extends AppCompatActivity {
         findPreviousBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myWebView.findNext(false);
+                if(!previousFindingSearch.contains(searchText.getText().toString())){
+                    myWebView.findAllAsync(searchText.getText().toString());
+                } else {
+                    myWebView.findNext(false);
+                }
             }
         });
 
@@ -346,7 +412,11 @@ public class MainActivity extends AppCompatActivity {
         findNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myWebView.findNext(true);
+                if(!previousFindingSearch.contains(searchText.getText().toString())){
+                    myWebView.findAllAsync(searchText.getText().toString());
+                } else {
+                    myWebView.findNext(true);
+                }
             }
         });
 
