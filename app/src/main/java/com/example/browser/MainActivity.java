@@ -192,8 +192,23 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+        Cursor userCache = db.rawQuery("Select * from usercache", null);
+        userCache.moveToFirst();
+
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setAppCacheEnabled(false);
+        webSettings.setBlockNetworkImage(true);
+        webSettings.setLoadsImagesAutomatically(true);
+        webSettings.setGeolocationEnabled(false);
+        webSettings.setNeedInitialFocus(false);
+        webSettings.setSaveFormData(false);
+
+        webSettings.setDefaultFontSize((int) (0.14f * Float.valueOf(String.valueOf(userCache.getInt(2)))));
+        fontSize = userCache.getInt(2);
 
 //        myWebView.setWebViewClient(new WebViewClient());
 //        myWebView.setWebViewClient(new DetectedWebViewClient(searchText, bookmarkAddBtn));
@@ -322,7 +337,69 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 menu.add(Menu.NONE, 103, Menu.NONE, "Сохранённые страницы");
-                menu.add(Menu.NONE, 104, Menu.NONE, "Добавить страницу");
+                MenuItem addPageBtn = menu.add(Menu.NONE, 104, Menu.NONE, "Добавить страницу");
+                addPageBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        LinearLayout.LayoutParams addPageLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
+                        builder.setTitle("Добавление текущей веб-страницы");
+                        LinearLayout addPageLayout = new LinearLayout(MainActivity.this);
+                        addPageLayout.setOrientation(LinearLayout.VERTICAL);
+                        TextView addPageBookmarks = new TextView(MainActivity.this);
+                        addPageBookmarks.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        addPageBookmarks.setLayoutParams(addPageLayoutParams);
+                        addPageBookmarks.setText("Закладки");
+                        addPageBookmarks.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                        TextView addPageFastAccess = new TextView(MainActivity.this);
+                        addPageFastAccess.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        addPageFastAccess.setLayoutParams(addPageLayoutParams);
+                        addPageFastAccess.setText("Быстрый доступ");
+                        addPageFastAccess.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                        TextView addPageScreenApps = new TextView(MainActivity.this);
+                        addPageScreenApps.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        addPageScreenApps.setLayoutParams(addPageLayoutParams);
+                        addPageScreenApps.setText("Экран приложений");
+                        addPageScreenApps.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                        TextView addPageSavePages = new TextView(MainActivity.this);
+                        addPageSavePages.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        addPageSavePages.setLayoutParams(addPageLayoutParams);
+                        addPageSavePages.setText("Сохранённые страницы");
+                        addPageSavePages.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                        addPageLayout.addView(addPageBookmarks);
+                        addPageLayout.addView(addPageFastAccess);
+                        addPageLayout.addView(addPageScreenApps);
+                        addPageLayout.addView(addPageSavePages);
+                        builder.setView(addPageLayout);
+                        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return false;
+                    }
+                });
                 menu.add(Menu.NONE, 105, Menu.NONE, "Поделиться");
                 menu.add(Menu.NONE, 106, Menu.NONE, "Режим затемнения");
                 menu.add(Menu.NONE, 107, Menu.NONE, "Блокировка рекламы");
@@ -354,40 +431,40 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
                         LinearLayout.LayoutParams fontSizeLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100);
-
                         builder.setTitle("Размер шрифта");
                         LinearLayout fontSizeLayout = new LinearLayout(MainActivity.this);
                         fontSizeLayout.setOrientation(LinearLayout.VERTICAL);
                         TextView fontSizePercent = new TextView(MainActivity.this);
                         fontSizePercent.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                         fontSizePercent.setLayoutParams(fontSizeLayoutParams);
-                        fontSizePercent.setText("100%");
-//                        builder.setView(fontSizePercent);
-//                        TextView fontSizeProgressBar = new TextView(MainActivity.this);
+                        fontSizePercent.setText(String.valueOf(fontSize) + "%");
                         ProgressBar fontSizeProgressBar = new ProgressBar(MainActivity.this, null, 0, R.style.Widget_AppCompat_ProgressBar_Horizontal);
                         fontSizeProgressBar.setMin(50);
-                        fontSizeProgressBar.setProgress(100);
+                        userCache.moveToFirst();
                         fontSizeProgressBar.setMax(200);
+                        fontSizeProgressBar.setProgress(fontSize);
                         fontSizeProgressBar.setLayoutParams(fontSizeLayoutParams);
                         fontSizeProgressBar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 String[] percents = fontSizePercent.getText().toString().split("%");
                                 if(fontSizeProgressBar.getProgress() < 200 && progressBarDirection.contains("right")) {
+                                    fontSize += 1;
                                     fontSizePercent.setText(String.valueOf(Integer.valueOf(percents[0]) + 1) + "%");
                                     fontSizeProgressBar.setProgress(fontSizeProgressBar.getProgress() + 1);
                                     if(String.valueOf(fontSizeProgressBar.getProgress()).contains(String.valueOf(200))){
                                         progressBarDirection = "left";
                                     }
                                 } else if(fontSizeProgressBar.getProgress() > 50 && progressBarDirection.contains("left")) {
+                                    fontSize -= 1;
                                     fontSizePercent.setText(String.valueOf(Integer.valueOf(percents[0]) - 1) + "%");
                                     fontSizeProgressBar.setProgress(fontSizeProgressBar.getProgress() - 1);
                                     if(String.valueOf(50).contains(String.valueOf(fontSizeProgressBar.getProgress()))){
                                         progressBarDirection = "right";
                                     }
                                 }
+//                                fontSize = fontSizeProgressBar.getProgress();
                             }
                         });
 //                        fontSizeLayout.setOnDragListener(new View.OnDragListener() {
@@ -411,16 +488,14 @@ public class MainActivity extends AppCompatActivity {
                         builder.setView(fontSizeLayout);
                         builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                fontSize = 0;
+                                db.execSQL("UPDATE \"usercache\" SET value = " + fontSize + " WHERE _id = 1;");
+                                webSettings.setDefaultFontSize((int) (0.14f * Float.valueOf(String.valueOf(fontSize))));
                             }
                         });
                         builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                             }
                         });
-
-//                        builder.setView(R.layout.dialog_fontsize);
-
                         AlertDialog dialog = builder.create();
                         dialog.show();
                         return false;
