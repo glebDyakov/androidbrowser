@@ -5,9 +5,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -48,6 +50,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public int fontSize = 0;
     public String previousFindingSearch;
     public EditText keywords;
     public ImageButton bookmarkAddBtn;
@@ -330,11 +333,32 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                menu.add(Menu.NONE, 108, Menu.NONE, "Версия для ПК");
-                menu.add(Menu.NONE, 109, Menu.NONE, "Размер шрифта");
-                menu.add(Menu.NONE, 110, Menu.NONE, "Дополнения");
-                menu.add(Menu.NONE, 111, Menu.NONE, "Печать/PDF");
-                menu.add(Menu.NONE, 112, Menu.NONE, "Настройки");
+                MenuItem pcVersionBtn = menu.add(Menu.NONE, 108, Menu.NONE, "Версия для ПК");
+                MenuItem fontSizeBtn = menu.add(Menu.NONE, 109, Menu.NONE, "Размер шрифта");
+
+                fontSizeBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("Размер шрифта");
+                        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                fontSize = 0;
+                            }
+                        });
+                        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return false;
+                    }
+                });
+                MenuItem extensionsBtn = menu.add(Menu.NONE, 110, Menu.NONE, "Дополнения");
+                MenuItem printPDFBtn = menu.add(Menu.NONE, 111, Menu.NONE, "Печать/PDF");
+                MenuItem settingsBtn = menu.add(Menu.NONE, 112, Menu.NONE, "Настройки");
             }
          });
 
