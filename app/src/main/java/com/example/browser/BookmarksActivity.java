@@ -60,8 +60,18 @@ public class BookmarksActivity extends AppCompatActivity {
         Cursor bookmarks = db.rawQuery("Select * from bookmarks", null);
         bookmarks.moveToFirst();
         LinearLayout layoutOfBookmarks = findViewById(R.id.layoutOfBookmarks);
+        LinearLayout scrollLayoutOfBookmarks = findViewById(R.id.scrollLayoutOfBookmarks);
         while (true) {
             LinearLayout bookmarkLayout = new LinearLayout(BookmarksActivity.this);
+            bookmarkLayout.setContentDescription(bookmarks.getString(2));
+            bookmarkLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(BookmarksActivity.this, MainActivity.class);
+                    intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+                    BookmarksActivity.this.startActivity(intent);
+                }
+            });
             ImageView bookmarkImg = new ImageView(BookmarksActivity.this);
             bookmarkImg.setImageResource(R.drawable.star);
             bookmarkImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
@@ -70,7 +80,10 @@ public class BookmarksActivity extends AppCompatActivity {
             bookmarkTitle.setText(bookmarks.getString(1));
             TextView bookmarkUrl = new TextView(BookmarksActivity.this);
             bookmarkUrl.setText(bookmarks.getString(2));
-            layoutOfBookmarks.addView(bookmarkLayout);
+
+//            layoutOfBookmarks.addView(bookmarkLayout);
+            scrollLayoutOfBookmarks.addView(bookmarkLayout);
+
             bookmarkLayout.addView(bookmarkImg);
             bookmarkLayout.addView(bookmarkTitle);
             bookmarkLayout.addView(bookmarkUrl);

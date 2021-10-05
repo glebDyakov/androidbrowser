@@ -43,5 +43,318 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutOfAdsBlockHeader"/>
+        app:layout_constraintTop_toBottomOf="@+id/layoutOfAdsBlockHeader">
+
+        <TextView
+            android:id="@+id/installed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Установленные"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/layoutOfInstalledContent"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/installedContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Попробуйте воспользоваться одним из предложенных ниже блокировщиков рекламы" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/possibleAdsBlock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Предлагаемые"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerFast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgFast"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/fastContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Adsblock fast"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/fastButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerInternet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgInternet"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/internetContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Adblock for Internet"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/internetButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerAdBlockPlus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgPlus"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/plusContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Adsblock Plus for Internet"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/plusButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerAdClear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/adClearImg"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/adClearContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="AdClear ads blocker for Internet"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/adClearButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerAdGuard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgAdGuard"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/adGuardContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="AdGuard Content Blocker"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/adGuardButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerCrystal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgCrystal"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/crystalContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Crystal AdBlock for Internet Browser"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/crystalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerDisconnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgDisconnect"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/disconnectContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Disconnect free for Internet Browser"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/disconnectButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerSpear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgSpear"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/spearContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Spear AdBlocker"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/spearButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfAdBlockerUnicorn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E4DEDE"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgUnicorn"
+                    android:layout_width="5dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/unicornContent"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Unicorn"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/unicornButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

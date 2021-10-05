@@ -57,6 +57,9 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public AlertDialog dialog;
+    public String browserVersion = "Версия для ПК";
+    public boolean isMobileVersion = true;
     public String progressBarDirection = "right";
     public float previousCoordX = 0f;
     public int fontSize = 0;
@@ -128,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
 //        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, contentlength INTEGER, mime TEXT);");
 
         WebView myWebView = (WebView) findViewById(R.id.htmlContent);
+
+        Log.d("mytag", "mobile version: " + myWebView.getSettings().getUserAgentString());
 
         myWebView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -263,7 +268,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        myWebView.loadUrl("https://google.com");
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            String urlFromHistory = extras.getString("urlfromhistory");
+            Log.d("mytag", "ищу по истории: " + urlFromHistory);
+            myWebView.loadUrl(urlFromHistory);
+        } else {
+            Log.d("mytag", "загружаю стартовую страницу");
+            myWebView.loadUrl("https://google.com");
+        }
+//        myWebView.loadUrl("https://google.com");
 
         myWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -393,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 db.execSQL("INSERT INTO \"savepages\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+                                dialog.hide();
                             }
                         });
                         addPageLayout.addView(addPageBookmarks);
@@ -404,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                             }
                         });
-                        AlertDialog dialog = builder.create();
+                        dialog = builder.create();
                         dialog.show();
                         return false;
                     }
@@ -456,12 +471,24 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                MenuItem pcVersionBtn = menu.add(Menu.NONE, 108, Menu.NONE, "Версия для ПК");
+                if(isMobileVersion) {
+                    browserVersion = "Версия для ПК";
+                } else if(!isMobileVersion){
+                    browserVersion = "Мобильная версия";
+                }
+                MenuItem pcVersionBtn = menu.add(Menu.NONE, 108, Menu.NONE, browserVersion);
                 pcVersionBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        isMobileVersion = !isMobileVersion;
                         String newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
+                        if(isMobileVersion) {
+                            newUA= "Mozilla/5.0 (Linux; Android 11; sdk_gphone_x86_arm Build/RSR1.200819.001.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36";
+                        } else if(!isMobileVersion) {
+                            newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
+                        }
                         myWebView.getSettings().setUserAgentString(newUA);
+                        myWebView.reload();
                         return false;
                     }
                 });

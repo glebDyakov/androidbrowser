@@ -181,14 +181,45 @@
                 app:srcCompat="@drawable/star"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck,ImageContrastCheck" />
 
-            <ImageButton
-                android:id="@+id/tabsBtn"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
-                android:scaleType="fitStart"
-                app:srcCompat="@drawable/tabs"
-                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                android:backgroundTint="#00FFFFFF">
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#00FFFFFF"
+                    android:drawablePadding="0dp"
+                    android:shadowColor="#00FFFFFF"
+                    android:text="2"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textSize="8sp"
+                    android:translationX="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck,DuplicateClickableBoundsCheck" />
+
+                <ImageButton
+                    android:id="@+id/tabsBtn"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#00FFFFFF"
+                    android:scaleType="fitStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/tabs"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageButton
                 android:id="@+id/burgerBtn"

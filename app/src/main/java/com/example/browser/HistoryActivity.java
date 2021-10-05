@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,10 +35,23 @@ public class HistoryActivity extends AppCompatActivity {
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
         Cursor historyRecords = db.rawQuery("Select * from history", null);
         historyRecords.moveToFirst();
-        LinearLayout layoutOfHistoryRecords = findViewById(R.id.layoutOfHistoryRecords);
+//        LinearLayout layoutOfHistoryRecords = findViewById(R.id.layoutOfHistoryRecords);
+        ScrollView scrollOfHistoryRecords = findViewById(R.id.scrollOfHistoryRecords);
+        LinearLayout scrollLayoutOfHistoryRecords = findViewById(R.id.scrollLayoutOfHistoryRecords);
         if(DatabaseUtils.queryNumEntries(db, "history") >= 1) {
             while (true) {
                 LinearLayout historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                historyRecordLayout.setContentDescription(historyRecords.getString(2));
+                historyRecordLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                        intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+//                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
+//                        intent.putExtra("urlfromhistory", "abc");
+                        HistoryActivity.this.startActivity(intent);
+                    }
+                });
                 ImageView historyRecordImg = new ImageView(HistoryActivity.this);
                 historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
                 historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
@@ -49,7 +63,8 @@ public class HistoryActivity extends AppCompatActivity {
                 historyRecordLayout.addView(historyRecordImg);
                 historyRecordLayout.addView(historyRecordTitle);
                 historyRecordLayout.addView(historyRecordUrl);
-                layoutOfHistoryRecords.addView(historyRecordLayout);
+                scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
+//                layoutOfHistoryRecords.addView(historyRecordLayout);
                 if (!historyRecords.moveToNext()) {
                     break;
                 }
@@ -65,7 +80,8 @@ public class HistoryActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         db.execSQL("DELETE FROM history;");
-                        layoutOfHistoryRecords.removeAllViews();
+//                        layoutOfHistoryRecords.removeAllViews();
+                        scrollLayoutOfHistoryRecords.removeAllViews();
                         return false;
                     }
                 });

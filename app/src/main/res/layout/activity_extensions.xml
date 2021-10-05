@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -79,10 +80,99 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/possibleExtensions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Предлагаемые" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/amazonExtensionImg"
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star"
+                    tools:ignore="ImageContrastCheck" />
+
+                <LinearLayout
+                    android:id="@+id/layoutOfAmazonExtensionContent"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/amazonExtensionContentHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Amazon Assistant"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/amazonExtensionContentBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Amazon Assistant позволяет мгновенно сравнить товары, цены и другие показатели во время покупок в Интернете." />
+
+                    <TextView
+                        android:id="@+id/amazonExtensionContentInstalled"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Не установлено"
+                        android:textColor="#0000FF" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/downloadAmazonExtension"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/download"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfTranslatorExtension"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ranslatorExtensionImg"
+                    android:layout_width="35dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scaleType="fitStart"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/ranslatorExtensionContentBody"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Переводчик"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/ranslatorExtensionDownload"
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/download" />
+            </LinearLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/installOtherExtensionsBtn"
