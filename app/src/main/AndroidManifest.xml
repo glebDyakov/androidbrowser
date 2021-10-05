@@ -40,6 +40,22 @@
             android:name=".DownloadsActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".PrintPDF"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".Extensions"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".SavePages"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".AdsBlock"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

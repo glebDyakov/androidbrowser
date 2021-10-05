@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS tabs (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS usercache (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS savepages (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
 
         if(DatabaseUtils.queryNumEntries(db, "usercache") <= 0) {
             db.execSQL("INSERT INTO \"usercache\"(name, value) VALUES (\"fontsize\", 100);");
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setAppCacheEnabled(false);
-        webSettings.setBlockNetworkImage(true);
+//        webSettings.setBlockNetworkImage(true);
         webSettings.setLoadsImagesAutomatically(true);
         webSettings.setGeolocationEnabled(false);
         webSettings.setNeedInitialFocus(false);
@@ -336,7 +337,15 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                menu.add(Menu.NONE, 103, Menu.NONE, "Сохранённые страницы");
+                MenuItem savePagesBtn = menu.add(Menu.NONE, 103, Menu.NONE, "Сохранённые страницы");
+                savePagesBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, SavePages.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
                 MenuItem addPageBtn = menu.add(Menu.NONE, 104, Menu.NONE, "Добавить страницу");
                 addPageBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
@@ -353,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                         addPageBookmarks.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                db.execSQL("INSERT INTO \"bookmarks\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
                             }
                         });
                         TextView addPageFastAccess = new TextView(MainActivity.this);
@@ -363,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
                         addPageFastAccess.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                db.execSQL("INSERT INTO \"savepages\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
                             }
                         });
                         TextView addPageScreenApps = new TextView(MainActivity.this);
@@ -373,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
                         addPageScreenApps.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                db.execSQL("INSERT INTO \"savepages\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
                             }
                         });
                         TextView addPageSavePages = new TextView(MainActivity.this);
@@ -383,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
                         addPageSavePages.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                db.execSQL("INSERT INTO \"savepages\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
                             }
                         });
                         addPageLayout.addView(addPageBookmarks);
@@ -400,9 +409,32 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                menu.add(Menu.NONE, 105, Menu.NONE, "Поделиться");
-                menu.add(Menu.NONE, 106, Menu.NONE, "Режим затемнения");
-                menu.add(Menu.NONE, 107, Menu.NONE, "Блокировка рекламы");
+                MenuItem shareBtn = menu.add(Menu.NONE, 105, Menu.NONE, "Поделиться");
+                shareBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("image/jpeg"); // might be text, sound, whatever
+                        startActivity(Intent.createChooser(share, "share"));
+                        return false;
+                    }
+                });
+                MenuItem darkModeBtn = menu.add(Menu.NONE, 106, Menu.NONE, "Режим затемнения");
+                darkModeBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return false;
+                    }
+                });
+                MenuItem adsBlockBtn = menu.add(Menu.NONE, 107, Menu.NONE, "Блокировка рекламы");
+                adsBlockBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, AdsBlock.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
                 MenuItem findOnPage = menu.add(Menu.NONE, 102, Menu.NONE, "Найти на странице");
                 findOnPage.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
@@ -425,6 +457,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 MenuItem pcVersionBtn = menu.add(Menu.NONE, 108, Menu.NONE, "Версия для ПК");
+                pcVersionBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        String newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
+                        myWebView.getSettings().setUserAgentString(newUA);
+                        return false;
+                    }
+                });
                 MenuItem fontSizeBtn = menu.add(Menu.NONE, 109, Menu.NONE, "Размер шрифта");
                 fontSizeBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -502,8 +542,32 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 MenuItem extensionsBtn = menu.add(Menu.NONE, 110, Menu.NONE, "Дополнения");
+                extensionsBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, Extensions.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
                 MenuItem printPDFBtn = menu.add(Menu.NONE, 111, Menu.NONE, "Печать/PDF");
+                printPDFBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, PrintPDF.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
                 MenuItem settingsBtn = menu.add(Menu.NONE, 112, Menu.NONE, "Настройки");
+                settingsBtn.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        MainActivity.this.startActivity(intent);
+                        return false;
+                    }
+                });
             }
          });
 

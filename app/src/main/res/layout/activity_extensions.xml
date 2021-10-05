@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layoutOfExtensionsHeader"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:orientation="horizontal"
+        android:translationY="-250dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/withdrawBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="back"
+            android:textSize="60sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Дополнения"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutOfExtensionsContent"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:orientation="vertical"
+        android:translationY="-150dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutOfExtensionsHeader">
+
+        <TextView
+            android:id="@+id/extensionsDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Используйте функции дополнений в Internet. Коснувшись дополнительного компонента, вы можете посмотреть его разрешения." />
+
+        <LinearLayout
+            android:id="@+id/layoutOfAdsBlockExtension"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"
+            android:background="#AFA7A7"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/adsBlockExtenstionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Блокировщики реламы"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/adsBlockExtenstionDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Загрузите блокировщики реламы, чтобы с удобством просматривать веб-страницы." />
+
+            <TextView
+                android:id="@+id/adsBlockExtenstionInstalled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Не установлено"
+                android:textColor="#0000FF" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Предлагаемые" />
+
+        <Button
+            android:id="@+id/installOtherExtensionsBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Установите другие дополнения" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
