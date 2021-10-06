@@ -57,6 +57,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public int currentTab = 7;
     public AlertDialog dialog;
     public String browserVersion = "Версия для ПК";
     public boolean isMobileVersion = true;
@@ -116,13 +117,41 @@ public class MainActivity extends AppCompatActivity {
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
         db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+
+//        db.execSQL("DROP TABLE IF EXISTS tabs");
         db.execSQL("CREATE TABLE IF NOT EXISTS tabs (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+
+//        db.execSQL("DROP TABLE IF EXISTS usercache");
         db.execSQL("CREATE TABLE IF NOT EXISTS usercache (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value TEXT);");
+
         db.execSQL("CREATE TABLE IF NOT EXISTS savepages (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
 
         if(DatabaseUtils.queryNumEntries(db, "usercache") <= 0) {
             db.execSQL("INSERT INTO \"usercache\"(name, value) VALUES (\"fontsize\", 100);");
+            if(DatabaseUtils.queryNumEntries(db, "tabs") <= 0) {
+                db.execSQL("INSERT INTO \"tabs\"(title, url) VALUES (\"Google\", \"https://google.com\");");
+                Cursor tabs = db.rawQuery("Select * from tabs", null);
+                tabs.moveToFirst();
+                currentTab = tabs.getInt(0);
+                db.execSQL("INSERT INTO \"usercache\"(name, value) VALUES (\"currenttab\", " + currentTab + ");");
+            }
+        } else {
+            if(DatabaseUtils.queryNumEntries(db, "tabs") <= 0) {
+                db.execSQL("INSERT INTO \"tabs\"(title, url) VALUES (\"Google\", \"https://google.com\");");
+
+                Cursor tabs = db.rawQuery("Select * from tabs", null);
+//                Cursor tabs = db.rawQuery("Select * from tabs where _id = " + currentTab, null);
+
+                tabs.moveToFirst();
+                currentTab = tabs.getInt(0);
+                db.execSQL("UPDATE \"usercache\" SET value = " + currentTab + " WHERE name = \"currenttab\";");
+            }
         }
+        Cursor usercache = db.rawQuery("Select * from usercache", null);
+        usercache.moveToFirst();
+        usercache.moveToNext();
+        currentTab = usercache.getInt(2);
+        Log.d("mytag", "currentTab: " + String.valueOf(currentTab));
 
 //        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT);");
 //        db.execSQL("CREATE TABLE IF NOT EXISTS downloads (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, useragent TEXT, contentDisposition TEXT, mimetype TEXT, contentlength INTEGER);");
@@ -133,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
         WebView myWebView = (WebView) findViewById(R.id.htmlContent);
 
         Log.d("mytag", "mobile version: " + myWebView.getSettings().getUserAgentString());
+
+        Button tabsCount = findViewById(R.id.tabsCount);
+        tabsCount.setText(String.valueOf(DatabaseUtils.queryNumEntries(db, "tabs")));
 
         myWebView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -163,19 +195,6 @@ public class MainActivity extends AppCompatActivity {
                                     request.setVisibleInDownloadsUi(true);
                                     downloadReference = downloadManager.enqueue(request);
                                     Log.d("mytag", "поставил закачку");
-//                                    try {
-//                                        downloadManager.openDownloadedFile(downloadReference);
-//                                        Log.d("mytag", "файл есть");
-//                                    } catch (FileNotFoundException e) {
-//                                        Log.d("mytag", "файла нет");
-//                                    }
-//                                    db.execSQL("INSERT INTO \"downloads\"(url) VALUES (\"" + url + "\")");
-//                                    DownloadManager.Query myDownloadQuery = new DownloadManager.Query();
-//                                    myDownloadQuery.setFilterById(downloadReference);
-//                                    Cursor cursor = downloadManager.query(myDownloadQuery);
-//                                    if(cursor.moveToFirst()){
-//                                        downloadManager.remove(downloadReference);
-//                                    }
                                     return false;
                                 }
                             });
@@ -189,25 +208,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        myWebView.requestFocusNodeHref();
-
-//        myWebView.setPictureListener(new WebView.PictureListener() {
-//            @Override
-//            public void onNewPicture(WebView webView, @Nullable Picture picture) {
-//                Log.d("mytag", "Cменилась картинка: " + String.valueOf(picture.getHeight()));
-//            }
-//        });
-
         Cursor userCache = db.rawQuery("Select * from usercache", null);
         userCache.moveToFirst();
 
         WebSettings webSettings = myWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
         webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setAppCacheEnabled(false);
-//        webSettings.setBlockNetworkImage(true);
         webSettings.setLoadsImagesAutomatically(true);
         webSettings.setGeolocationEnabled(false);
         webSettings.setNeedInitialFocus(false);
@@ -216,8 +223,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setDefaultFontSize((int) (0.14f * Float.valueOf(String.valueOf(userCache.getInt(2)))));
         fontSize = userCache.getInt(2);
 
-//        myWebView.setWebViewClient(new WebViewClient());
-//        myWebView.setWebViewClient(new DetectedWebViewClient(searchText, bookmarkAddBtn));
         myWebView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -233,6 +238,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 keywords.setText(myWebView.getTitle().toString());
+
+                db.execSQL("UPDATE \"tabs\" SET title = \"" + view.getTitle() + "\", url = \"" + url + "\" WHERE _id = " + currentTab +  ";");
 
             }
 
@@ -275,9 +282,19 @@ public class MainActivity extends AppCompatActivity {
             myWebView.loadUrl(urlFromHistory);
         } else {
             Log.d("mytag", "загружаю стартовую страницу");
-            myWebView.loadUrl("https://google.com");
+
+//            Cursor currentTabRecord = db.rawQuery("Select * from usercache", null);
+//            currentTabRecord.moveToFirst();
+//            currentTabRecord.moveToNext();
+//            Log.d("mytag", "currentTabRecord.getInt(2)): " + String.valueOf(currentTabRecord.getInt(2)));
+            Cursor tabsCursor = db.rawQuery("Select * from tabs where _id = " + currentTab, null);
+            tabsCursor.moveToFirst();
+            Log.d("mytag", "activeTab: " + String.valueOf(tabsCursor.getInt(0)));
+
+//            myWebView.loadUrl("https://google.com");
+            myWebView.loadUrl(tabsCursor.getString(2));
+
         }
-//        myWebView.loadUrl("https://google.com");
 
         myWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -318,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 myWebView.loadUrl(rightUrl);
 
-                db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+//                db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
 
                 if(myWebView.canGoBack()){
                     leftArrowBtn.setTextColor(Color.rgb(0, 0, 0));
