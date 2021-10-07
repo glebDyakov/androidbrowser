@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -111,11 +112,37 @@ public class TabsActivity extends AppCompatActivity {
                 tabTitle.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
                 tabTitle.setText(tabs.getString(1));
                 TextView tabUrl = new TextView(TabsActivity.this);
-                tabUrl.setLayoutParams(new ConstraintLayout.LayoutParams(1250, 175));
+                tabUrl.setLayoutParams(new ConstraintLayout.LayoutParams(925, 175));
                 tabUrl.setText(tabs.getString(2));
+                ImageView removeTabImg = new ImageView(TabsActivity.this);
+                removeTabImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                removeTabImg.setImageResource(R.drawable.star);
+                removeTabImg.setContentDescription(String.valueOf(layoutOfTabs.getChildCount()));
+                removeTabImg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("mytag", "удаление вкладки: " + layoutOfTabs.getChildAt(Integer.valueOf(v.getContentDescription().toString())).getContentDescription().toString());
+                        Log.d("mytag", "индекс вкладки: " + removeTabImg.getContentDescription().toString());
+                        db.execSQL("DELETE FROM \"tabs\" WHERE _id = " + Integer.valueOf(layoutOfTabs.getChildAt(Integer.valueOf(v.getContentDescription().toString())).getContentDescription().toString()) + ";");
+                        if(tabs.moveToFirst()) {
+                            db.execSQL("UPDATE \"usercache\" SET value = " + tabs.getInt(0) + " WHERE name = \"currenttab\";");
+                        }
+                        layoutOfTabs.removeViewAt(Integer.valueOf(v.getContentDescription().toString()));
+//                        layoutOfTabs.removeViewAt(Integer.valueOf(removeTabImg.getContentDescription().toString()));
+                        if(String.valueOf(layoutOfTabs.getChildCount()).contains("0")){
+                            drawTabs();
+//                            LinearLayout tabLayout = new LinearLayout(TabsActivity.this);
+//                            TextView notFoundOfTabs = new TextView(TabsActivity.this);
+//                            notFoundOfTabs.setText("Вкладок Нет");
+//                            tabLayout.addView(notFoundOfTabs);
+//                            layoutOfTabs.addView(tabLayout);
+                        }
+                    }
+                });
                 tabLayout.addView(tabImg);
                 tabLayout.addView(tabTitle);
                 tabLayout.addView(tabUrl);
+                tabLayout.addView(removeTabImg);
                 layoutOfTabs.addView(tabLayout);
                 if (tabIdx < DatabaseUtils.queryNumEntries(db, "tabs") - 1) {
                     tabs.moveToNext();
