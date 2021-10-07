@@ -55,30 +55,27 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/share" />
 
-    <ImageView
+    <TextView
         android:id="@+id/findBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:translationX="315dp"
-        app:layout_constraintBottom_toTopOf="@+id/layoutOfHistoryRecords"
-        app:layout_constraintEnd_toStartOf="@+id/cancelBtn"
+        android:text="TextView"
+        android:translationX="115dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollOfHistoryRecords"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/search" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/cancelBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="339dp"
-        android:layout_marginBottom="4dp"
-        android:translationY="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/layoutOfHistoryRecords"
+        android:text="TextView"
+        android:translationX="-165dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollOfHistoryRecords"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/arrowleft"
-        tools:ignore="SpeakableTextPresentCheck" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/scrollOfHistoryRecords"

@@ -19,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Picture;
+import android.graphics.Typeface;
 import android.icu.text.UnicodeSet;
 import android.net.Uri;
 import android.os.Build;
@@ -57,6 +58,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public Typeface fontAwesome;
     public int currentTab = 7;
     public AlertDialog dialog;
     public String browserVersion = "Версия для ПК";
@@ -86,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
 
         searchText = findViewById(R.id.searchText);
 
@@ -124,7 +128,13 @@ public class MainActivity extends AppCompatActivity {
 //        db.execSQL("DROP TABLE IF EXISTS usercache");
         db.execSQL("CREATE TABLE IF NOT EXISTS usercache (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value TEXT);");
 
+//        db.execSQL("CREATE TABLE IF NOT EXISTS homepages (_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT);");
+
         db.execSQL("CREATE TABLE IF NOT EXISTS savepages (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+
+//        if(DatabaseUtils.queryNumEntries(db, "homepages") <= 0) {
+//            db.execSQL("INSERT INTO \"homepages\"(url) VALUES (\"https://google.com\");");
+//        }
 
         if(DatabaseUtils.queryNumEntries(db, "usercache") <= 0) {
             db.execSQL("INSERT INTO \"usercache\"(name, value) VALUES (\"fontsize\", 100);");
@@ -135,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 currentTab = tabs.getInt(0);
                 db.execSQL("INSERT INTO \"usercache\"(name, value) VALUES (\"currenttab\", " + currentTab + ");");
             }
+
         } else {
             if(DatabaseUtils.queryNumEntries(db, "tabs") <= 0) {
                 db.execSQL("INSERT INTO \"tabs\"(title, url) VALUES (\"Google\", \"https://google.com\");");
@@ -304,7 +315,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         keywords = findViewById(R.id.keywords);
-        ImageButton searchBtn = findViewById(R.id.searchBtn);
+
+//        ImageButton searchBtn = findViewById(R.id.searchBtn);
+        TextView searchBtn = findViewById(R.id.searchBtn);
+        searchBtn.setTypeface(fontAwesome);
+        searchBtn.setTextSize(34f);
+//        searchBtn.setTextColor(Color.rgb(255, 150, 0));
+        searchBtn.setText("s");
+
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -624,7 +642,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton bookmarkBtn = findViewById(R.id.bookmarkBtn);
+
+//        ImageButton bookmarkBtn = findViewById(R.id.bookmarkBtn);
+        TextView bookmarkBtn = findViewById(R.id.bookmarkBtn);
+        bookmarkBtn.setTypeface(fontAwesome);
+        bookmarkBtn.setTextSize(34f);
+        bookmarkBtn.setTextColor(Color.rgb(255, 150, 0));
+        bookmarkBtn.setText("Š");
         bookmarkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -638,7 +662,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myWebView.loadUrl("https://google.com");
-
+//                Cursor homepages = db.rawQuery("Select * from homepages", null);
+//                homepages.moveToFirst();
+//                myWebView.loadUrl(homepages.getString(1));
             }
         });
 
@@ -651,7 +677,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton refreshBtn = findViewById(R.id.refreshBtn);
+//        ImageButton refreshBtn = findViewById(R.id.refreshBtn);
+        TextView refreshBtn = findViewById(R.id.refreshBtn);
+        refreshBtn.setTypeface(fontAwesome);
+        refreshBtn.setTextSize(34f);
+        refreshBtn.setText("0");
+
         refreshBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

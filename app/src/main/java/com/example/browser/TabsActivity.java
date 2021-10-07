@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -26,12 +27,16 @@ import org.w3c.dom.Text;
 public class TabsActivity extends AppCompatActivity {
 
     public SQLiteDatabase db;
-    LinearLayout layoutOfTabs;
+    public LinearLayout layoutOfTabs;
+    public Typeface fontAwesome;
+
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabs);
+
+        fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
 
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
 
@@ -114,10 +119,20 @@ public class TabsActivity extends AppCompatActivity {
                 TextView tabUrl = new TextView(TabsActivity.this);
                 tabUrl.setLayoutParams(new ConstraintLayout.LayoutParams(925, 175));
                 tabUrl.setText(tabs.getString(2));
-                ImageView removeTabImg = new ImageView(TabsActivity.this);
+
+                TextView removeTabImg = new TextView(TabsActivity.this);
                 removeTabImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-                removeTabImg.setImageResource(R.drawable.star);
+                removeTabImg.setText("*");
+                removeTabImg.setTypeface(fontAwesome);
+                removeTabImg.setTextSize(34f);
+                removeTabImg.setTextColor(Color.rgb(255, 0, 0));
                 removeTabImg.setContentDescription(String.valueOf(layoutOfTabs.getChildCount()));
+
+//                ImageView removeTabImg = new ImageView(TabsActivity.this);
+//                removeTabImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+//                removeTabImg.setImageResource(R.drawable.star);
+//                removeTabImg.setContentDescription(String.valueOf(layoutOfTabs.getChildCount()));
+
                 removeTabImg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

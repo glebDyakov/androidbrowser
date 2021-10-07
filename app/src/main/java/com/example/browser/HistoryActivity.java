@@ -25,12 +25,15 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 public class HistoryActivity extends AppCompatActivity {
 
     public SQLiteDatabase db;
+    Typeface fontAwesome;
 
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
 
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
         Cursor historyRecords = db.rawQuery("Select * from history", null);
@@ -88,7 +91,11 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton cancelBtn = findViewById(R.id.cancelBtn);
+//        ImageButton cancelBtn = findViewById(R.id.cancelBtn);
+        TextView cancelBtn = findViewById(R.id.cancelBtn);
+        cancelBtn.setTextSize(34f);
+        cancelBtn.setTypeface(fontAwesome);
+        cancelBtn.setText("<");
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,12 +104,12 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-        TextView historyLabel = findViewById(R.id.historyLabel);
-//        Typeface fontAwesome = Typeface.createFromAsset(getAssets(), "fonts/fontawesome.ttf");
+        TextView findBtn = findViewById(R.id.findBtn);
 //        historyLabel.setTextColor(Color.rgb(255, 0, 0));
-//        historyLabel.setTextSize(125f);
-//        historyLabel.setTypeface(fontAwesome);
-//        historyLabel.setText("\uF0C0");
+        findBtn.setTextSize(34f);
+        findBtn.setTypeface(fontAwesome);
+//        historyLabel.setText("Š");
+        findBtn.setText("s");
 
     }
 }
