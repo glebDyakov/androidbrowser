@@ -54,6 +54,9 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -125,8 +128,9 @@ public class MainActivity extends AppCompatActivity {
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
 
 //        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+//        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT, favicon TEXT);");
 //        db.execSQL("DROP TABLE IF EXISTS history");
-        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT, favicon TEXT);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT, favicon TEXT, date TEXT);");
 
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
 
@@ -288,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 return super.shouldOverrideUrlLoading(view, request);
             }
 
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
@@ -295,7 +300,9 @@ public class MainActivity extends AppCompatActivity {
                 if(url.contains(".ico")) {
                     faviconUrl = url;
                     Log.d("mytag", "onLoadResource обнаружил favicon url:" + url + ", faviconUrl: " + faviconUrl);
-                    db.execSQL("INSERT INTO \"history\"(title, url, favicon) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\", \"" + faviconUrl + "\");");
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDateTime now = LocalDateTime.now();
+                    db.execSQL("INSERT INTO \"history\"(title, url, favicon, date) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\", \"" + faviconUrl + "\", \"" + dtf.format(now) + "\");");
                 }
             }
         });

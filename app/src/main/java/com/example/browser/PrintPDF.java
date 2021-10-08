@@ -16,16 +16,21 @@ public class PrintPDF extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_printpdf);
 
-        TextView returnBtn = findViewById(R.id.returnBtn);
-        returnBtn.setText("<");
-        returnBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PrintPDF.this, MainActivity.class);
-                PrintPDF.this.startActivity(intent);
-            }
-        });
+//        TextView returnBtn = findViewById(R.id.returnBtn);
+//        returnBtn.setText("<");
+//        returnBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(PrintPDF.this, MainActivity.class);
+//                PrintPDF.this.startActivity(intent);
+//            }
+//        });
 
     }
 
-}
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    }

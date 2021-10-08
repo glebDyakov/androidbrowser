@@ -7,37 +7,54 @@
     <LinearLayout
         android:id="@+id/layoutOfPrintPDFHeader"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
+        android:layout_height="35dp"
         android:orientation="horizontal"
-        android:translationY="-250dp"
+        android:translationY="-300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/returnBtn"
+            android:id="@+id/countOfCopiesLabel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="back"
-            android:textSize="60sp" />
+            android:text="Копии"
+            android:textSize="24sp" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/countOfCopies"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Выбрать принтер"
+            android:text="0"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/pageSizeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Размер бумаги"
             android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/pageSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ISO A4"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layoutOfPrintPDFContent"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="575dp"
+        android:layout_marginTop="199dp"
         android:orientation="horizontal"
-        android:translationY="-150dp"
+        android:translationY="-225dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
