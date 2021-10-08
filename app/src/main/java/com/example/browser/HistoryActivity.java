@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +23,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import java.util.concurrent.ExecutionException;
 
 public class HistoryActivity extends AppCompatActivity {
 
@@ -58,7 +62,18 @@ public class HistoryActivity extends AppCompatActivity {
                 ImageView historyRecordImg = new ImageView(HistoryActivity.this);
                 historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
                 historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
-                historyRecordImg.setImageResource(R.drawable.star);
+
+//                historyRecordImg.setImageResource(R.drawable.star);
+                Bitmap uploadedImg = null;
+                try {
+                    uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
+                } catch (ExecutionException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                } catch (InterruptedException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                }
+                historyRecordImg.setImageBitmap(uploadedImg);
+
                 TextView historyRecordTitle = new TextView(HistoryActivity.this);
                 historyRecordTitle.setText(historyRecords.getString(1));
                 TextView historyRecordUrl = new TextView(HistoryActivity.this);

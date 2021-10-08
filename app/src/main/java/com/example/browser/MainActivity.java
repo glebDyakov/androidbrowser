@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    public String faviconUrl;
     public Typeface fontAwesome;
     public int currentTab = 7;
     public AlertDialog dialog;
@@ -68,7 +69,10 @@ public class MainActivity extends AppCompatActivity {
     public int fontSize = 0;
     public String previousFindingSearch;
     public EditText keywords;
-    public ImageButton bookmarkAddBtn;
+
+//    public ImageButton bookmarkAddBtn;
+    public TextView bookmarkAddBtn;
+
     public String url;
     public long downloadReference;
     public DownloadManager downloadManager;
@@ -119,7 +123,11 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         db = openOrCreateDatabase("bowser.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
-        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+
+//        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
+//        db.execSQL("DROP TABLE IF EXISTS history");
+        db.execSQL("CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT, favicon TEXT);");
+
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT);");
 
 //        db.execSQL("DROP TABLE IF EXISTS tabs");
@@ -240,7 +248,8 @@ public class MainActivity extends AppCompatActivity {
                 super.onPageStarted(view, url, favicon);
                 Log.d("mytag", "onPageStarted: with url " + url);
 
-                db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+                // работает но закомментировал чтобы вставлять фавайкон
+//                db.execSQL("INSERT INTO \"history\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
 
                 isBookmarkPage(url);
 
@@ -283,6 +292,11 @@ public class MainActivity extends AppCompatActivity {
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
                 Log.d("mytag", "onLoadResource: " + url);
+                if(url.contains(".ico")) {
+                    faviconUrl = url;
+                    Log.d("mytag", "onLoadResource обнаружил favicon url:" + url + ", faviconUrl: " + faviconUrl);
+                    db.execSQL("INSERT INTO \"history\"(title, url, favicon) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\", \"" + faviconUrl + "\");");
+                }
             }
         });
 
@@ -364,7 +378,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton burgerBtn = findViewById(R.id.burgerBtn);
+//        ImageButton burgerBtn = findViewById(R.id.burgerBtn);
+        TextView burgerBtn = findViewById(R.id.burgerBtn);
+        burgerBtn.setTextSize(34f);
+        burgerBtn.setTypeface(fontAwesome);
+        burgerBtn.setText("l");
         burgerBtn.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -657,7 +675,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton homeBtn = findViewById(R.id.homeBtn);
+//        ImageButton homeBtn = findViewById(R.id.homeBtn);
+        TextView homeBtn = findViewById(R.id.homeBtn);
+        homeBtn.setTypeface(fontAwesome);
+        homeBtn.setTextSize(34f);
+        homeBtn.setText("\u0014");
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -669,11 +691,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bookmarkAddBtn = findViewById(R.id.bookmarkAddBtn);
+        bookmarkAddBtn.setTypeface(fontAwesome);
+        bookmarkAddBtn.setTextSize(34f);
         bookmarkAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 db.execSQL("INSERT INTO \"bookmarks\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
-                bookmarkAddBtn.setImageResource(R.drawable.star);
+
+//                bookmarkAddBtn.setImageResource(R.drawable.star);
+                bookmarkAddBtn.setTextColor(Color.rgb(255, 150, 0));
+                bookmarkAddBtn.setText("Š");
+
             }
         });
 
@@ -785,12 +813,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void isBookmarkPage(String currentUrl) {
-        bookmarkAddBtn.setImageResource(R.drawable.emptystar);
+//        bookmarkAddBtn.setImageResource(R.drawable.emptystar);
+        bookmarkAddBtn.setTextColor(Color.rgb(0, 0, 0));
+        bookmarkAddBtn.setText("J");
+
         Cursor bookmarks = db.rawQuery("Select * from bookmarks", null);
         bookmarks.moveToFirst();
         while (true) {
             if (bookmarks.getString(2).contains(currentUrl)) {
-                bookmarkAddBtn.setImageResource(R.drawable.star);
+
+//                bookmarkAddBtn.setImageResource(R.drawable.star);
+                bookmarkAddBtn.setTextColor(Color.rgb(255, 150, 0));
+                bookmarkAddBtn.setText("Š");
+
                 break;
             }
             if (!bookmarks.moveToNext()) {
