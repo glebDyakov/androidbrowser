@@ -91,7 +91,48 @@
             android:id="@+id/scrollLayoutOfHistoryRecords"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical" >
+
+            <Spinner
+                android:id="@+id/today"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
+                tools:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/yesterday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
+                tools:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/sevenDays"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
+                tools:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/prevMonth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
+                tools:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/old"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
+                tools:visibility="visible" />
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout

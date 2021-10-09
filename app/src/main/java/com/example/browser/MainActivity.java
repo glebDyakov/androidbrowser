@@ -703,6 +703,7 @@ public class MainActivity extends AppCompatActivity {
         bookmarkAddBtn = findViewById(R.id.bookmarkAddBtn);
         bookmarkAddBtn.setTypeface(fontAwesome);
         bookmarkAddBtn.setTextSize(34f);
+        bookmarkAddBtn.setText("J");
         bookmarkAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

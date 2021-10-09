@@ -14,11 +14,14 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,6 +62,7 @@ public class HistoryActivity extends AppCompatActivity {
                     Log.d("mytag", "переключаю сегодня");
                 }
             });
+
             TextView historyRecordFilter = new TextView(HistoryActivity.this);
             historyRecordFilter.setText("Сегодня");
             historyRecordLayout.addView(historyRecordFilter);
@@ -71,16 +75,20 @@ public class HistoryActivity extends AppCompatActivity {
                     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 //                                menu.add(Menu.NONE, 601, Menu.NONE, "удаление и поделиться");
                         historyRecords.moveToFirst();
+                        String historyDate = historyRecords.getString(4);
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        int result = 0;
-                        try {
-                            result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
-                            menu.add(Menu.NONE, 601, Menu.NONE, String.valueOf(result));
-                            Log.d("mytag", "date compare to:" + String.valueOf(result));
-                        } catch (ParseException e) {
-                            menu.add(Menu.NONE, 601, Menu.NONE, "ОШИБКА");
-                            Log.d("mytag", "ошибка парсинга даты");
-                        }
+                        menu.add(Menu.NONE, 601, Menu.NONE, String.valueOf(historyDate.split("/")[0].toString()) + "/" + String.valueOf(String.valueOf(historyDate.split("/")[1].toString())) + "/" + String.valueOf(historyDate.split("/")[2].toString()));
+
+//                        int result = 0;
+//                        try {
+//                            result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
+//                            menu.add(Menu.NONE, 601, Menu.NONE, String.valueOf(result));
+//                            Log.d("mytag", "date compare to:" + String.valueOf(result));
+//                        } catch (ParseException e) {
+//                            menu.add(Menu.NONE, 601, Menu.NONE, "ОШИБКА");
+//                            Log.d("mytag", "ошибка парсинга даты");
+//                        }
+
                     }
                 });
                 historyRecordLayout.setOnClickListener(new View.OnClickListener() {
@@ -93,11 +101,12 @@ public class HistoryActivity extends AppCompatActivity {
                         HistoryActivity.this.startActivity(intent);
                     }
                 });
+                CheckBox checkbox = new CheckBox(HistoryActivity.this);
                 ImageView historyRecordImg = new ImageView(HistoryActivity.this);
                 historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
                 historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
 
-                //                historyRecordImg.setImageResource(R.drawable.star);
+//                historyRecordImg.setImageResource(R.drawable.star);
                 Bitmap uploadedImg = null;
                 try {
                     uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
@@ -110,6 +119,7 @@ public class HistoryActivity extends AppCompatActivity {
                 historyRecordTitle.setText(historyRecords.getString(1));
                 TextView historyRecordUrl = new TextView(HistoryActivity.this);
                 historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(checkbox);
                 historyRecordLayout.addView(historyRecordImg);
                 historyRecordLayout.addView(historyRecordTitle);
                 historyRecordLayout.addView(historyRecordUrl);
@@ -121,7 +131,7 @@ public class HistoryActivity extends AppCompatActivity {
                     if (result == 0) {
 //                        System.out.println("Date1 is equal to Date2");
                     } else if (result > 0) {
-//                            System.out.println("Date1 is after Date2");
+//                        System.out.println("Date1 is after Date2");
                         scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
 //                        layoutOfHistoryRecords.addView(historyRecordLayout);
                     } else if (result < 0) {
@@ -143,13 +153,14 @@ public class HistoryActivity extends AppCompatActivity {
                     Log.d("mytag", "переключаю сегодня");
                 }
             });
+            Spinner today = findViewById(R.id.today);
+            today.setAdapter(new ArrayAdapter<>(HistoryActivity.this, R.layout.dialog_fontsize));
             historyRecordFilter = new TextView(HistoryActivity.this);
             historyRecordFilter.setText("Вчера");
             historyRecordLayout.addView(historyRecordFilter);
             scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
             historyRecords.moveToFirst();
             while (true) {
-                System.out.println("Date1 is before Date2");
                 historyRecordLayout = new LinearLayout(HistoryActivity.this);
                 historyRecordLayout.setContentDescription(historyRecords.getString(2));
                 historyRecordLayout.setOnClickListener(new View.OnClickListener() {
@@ -188,7 +199,12 @@ public class HistoryActivity extends AppCompatActivity {
                 try {
                     String historyDate = historyRecords.getString(4).toString();
                     Date currentDate = sdf.parse(historyDate);
-                    int result = sdf.parse(String.valueOf(currentDate.getYear()) + "/" + String.valueOf(currentDate.getMonth() - 1) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+//                    int result = sdf.parse(String.valueOf(currentDate.getYear()) + "/" + String.valueOf(currentDate.getMonth() - 1) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+//                    int result = sdf.parse(String.valueOf(historyDate.split("/")[2].toString()) + "/" + String.valueOf(String.valueOf(Integer.valueOf(historyDate.split("/")[1].toString()) - 1)) + "/" + String.valueOf(historyDate.split("/")[0].toString())).compareTo(currentDate);
+//                    int result = sdf.parse(String.valueOf(currentDate.getYear()) + "/" + String.valueOf(currentDate.getMonth()) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+                    int result = sdf.parse(String.valueOf(historyDate.split("/")[0].toString()) + "/" + String.valueOf(String.valueOf(historyDate.split("/")[1].toString())) + "/" + String.valueOf(historyDate.split("/")[2].toString())).compareTo(currentDate);
+//                    int result = new Date().compareTo(currentDate);
+
                     if (result == 0) {
 
                     } else if (result > 0) {
@@ -211,6 +227,7 @@ public class HistoryActivity extends AppCompatActivity {
                     Log.d("mytag", "переключаю сегодня");
                 }
             });
+
             historyRecordFilter = new TextView(HistoryActivity.this);
             historyRecordFilter.setText("За послдение 7 дня");
             historyRecordLayout.addView(historyRecordFilter);
@@ -278,6 +295,7 @@ public class HistoryActivity extends AppCompatActivity {
                     Log.d("mytag", "переключаю сегодня");
                 }
             });
+
             historyRecordFilter = new TextView(HistoryActivity.this);
             historyRecordFilter.setText("Прошлый месяц");
             historyRecordLayout.addView(historyRecordFilter);
