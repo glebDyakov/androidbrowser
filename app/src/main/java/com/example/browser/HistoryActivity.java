@@ -64,65 +64,77 @@ public class HistoryActivity extends AppCompatActivity {
             historyRecordLayout.addView(historyRecordFilter);
             scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
             while (true) {
-//                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                try {
-//                    int result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
-//                    if (result == 0) {
-//                        System.out.println("Date1 is equal to Date2");
-//                    } else if (result > 0) {
-//                        System.out.println("Date1 is after Date2");
-//                    } else if (result < 0) {
-//                        System.out.println("Date1 is before Date2");
-//                    } else {
-                        historyRecordLayout = new LinearLayout(HistoryActivity.this);
-                        historyRecordLayout.setContentDescription(historyRecords.getString(2));
-                        historyRecordLayout.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                            @Override
-                            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                                menu.add(Menu.NONE, 601, Menu.NONE, "удаление и поделиться");
-                            }
-                        });
-                        historyRecordLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
-                                intent.putExtra("urlfromhistory", v.getContentDescription().toString());
-                                //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
-                                //                        intent.putExtra("urlfromhistory", "abc");
-                                HistoryActivity.this.startActivity(intent);
-                            }
-                        });
-                        ImageView historyRecordImg = new ImageView(HistoryActivity.this);
-                        historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-                        historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
-
-                        //                historyRecordImg.setImageResource(R.drawable.star);
-                        Bitmap uploadedImg = null;
+                historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                historyRecordLayout.setContentDescription(historyRecords.getString(2));
+                historyRecordLayout.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                    @Override
+                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//                                menu.add(Menu.NONE, 601, Menu.NONE, "удаление и поделиться");
+                        historyRecords.moveToFirst();
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        int result = 0;
                         try {
-                            uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
-                        } catch (ExecutionException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        } catch (InterruptedException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
+                            result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
+                            menu.add(Menu.NONE, 601, Menu.NONE, String.valueOf(result));
+                            Log.d("mytag", "date compare to:" + String.valueOf(result));
+                        } catch (ParseException e) {
+                            menu.add(Menu.NONE, 601, Menu.NONE, "ОШИБКА");
+                            Log.d("mytag", "ошибка парсинга даты");
                         }
-                        historyRecordImg.setImageBitmap(uploadedImg);
+                    }
+                });
+                historyRecordLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                        intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+                        //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
+                        //                        intent.putExtra("urlfromhistory", "abc");
+                        HistoryActivity.this.startActivity(intent);
+                    }
+                });
+                ImageView historyRecordImg = new ImageView(HistoryActivity.this);
+                historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
 
-                        TextView historyRecordTitle = new TextView(HistoryActivity.this);
-                        historyRecordTitle.setText(historyRecords.getString(1));
-                        TextView historyRecordUrl = new TextView(HistoryActivity.this);
-                        historyRecordUrl.setText(historyRecords.getString(2));
-                        historyRecordLayout.addView(historyRecordImg);
-                        historyRecordLayout.addView(historyRecordTitle);
-                        historyRecordLayout.addView(historyRecordUrl);
+                //                historyRecordImg.setImageResource(R.drawable.star);
+                Bitmap uploadedImg = null;
+                try {
+                    uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
+                } catch (Exception e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                }
+                historyRecordImg.setImageBitmap(uploadedImg);
+
+                TextView historyRecordTitle = new TextView(HistoryActivity.this);
+                historyRecordTitle.setText(historyRecords.getString(1));
+                TextView historyRecordUrl = new TextView(HistoryActivity.this);
+                historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(historyRecordImg);
+                historyRecordLayout.addView(historyRecordTitle);
+                historyRecordLayout.addView(historyRecordUrl);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    String historyDate = historyRecords.getString(4).toString();
+                    Date currentDate = sdf.parse(historyDate);
+                    int result = new Date().compareTo(currentDate);
+                    if (result == 0) {
+//                        System.out.println("Date1 is equal to Date2");
+                    } else if (result > 0) {
+//                            System.out.println("Date1 is after Date2");
                         scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
-                        //                layoutOfHistoryRecords.addView(historyRecordLayout);
-                        if (!historyRecords.moveToNext()) {
-                            break;
-                        }
-//                    }
-//                } catch (ParseException e) {
-//                    Log.d("mytag", "ошибка парсинга даты");
-//                }
+//                        layoutOfHistoryRecords.addView(historyRecordLayout);
+                    } else if (result < 0) {
+//                        System.out.println("Date1 is before Date2");
+                    }
+                } catch (ParseException e) {
+                    Log.d("mytag", "ошибка парсинга даты");
+                }
+
+                if (!historyRecords.moveToNext()) {
+                    break;
+                }
+
             }
             historyRecordLayout = new LinearLayout(HistoryActivity.this);
             historyRecordLayout.setOnClickListener(new View.OnClickListener() {
@@ -137,54 +149,59 @@ public class HistoryActivity extends AppCompatActivity {
             scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
             historyRecords.moveToFirst();
             while (true) {
-//                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                try {
-//                    int result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
-//                    if (result < 0) {
-                        System.out.println("Date1 is before Date2");
-                        historyRecordLayout = new LinearLayout(HistoryActivity.this);
-                        historyRecordLayout.setContentDescription(historyRecords.getString(2));
-                        historyRecordLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
-                                intent.putExtra("urlfromhistory", v.getContentDescription().toString());
-                                //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
-                                //                        intent.putExtra("urlfromhistory", "abc");
-                                HistoryActivity.this.startActivity(intent);
-                            }
-                        });
-                        ImageView historyRecordImg = new ImageView(HistoryActivity.this);
-                        historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-                        historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
+                System.out.println("Date1 is before Date2");
+                historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                historyRecordLayout.setContentDescription(historyRecords.getString(2));
+                historyRecordLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                        intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+                        //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
+                        //                        intent.putExtra("urlfromhistory", "abc");
+                        HistoryActivity.this.startActivity(intent);
+                    }
+                });
+                ImageView historyRecordImg = new ImageView(HistoryActivity.this);
+                historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
 
-                        //                historyRecordImg.setImageResource(R.drawable.star);
-                        Bitmap uploadedImg = null;
-                        try {
-                            uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
-                        } catch (ExecutionException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        } catch (InterruptedException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        }
-                        historyRecordImg.setImageBitmap(uploadedImg);
+                //                historyRecordImg.setImageResource(R.drawable.star);
+                Bitmap uploadedImg = null;
+                try {
+                    uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
+                } catch (ExecutionException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                } catch (InterruptedException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                }
+                historyRecordImg.setImageBitmap(uploadedImg);
 
-                        TextView historyRecordTitle = new TextView(HistoryActivity.this);
-                        historyRecordTitle.setText(historyRecords.getString(1));
-                        TextView historyRecordUrl = new TextView(HistoryActivity.this);
-                        historyRecordUrl.setText(historyRecords.getString(2));
-                        historyRecordLayout.addView(historyRecordImg);
-                        historyRecordLayout.addView(historyRecordTitle);
-                        historyRecordLayout.addView(historyRecordUrl);
+                TextView historyRecordTitle = new TextView(HistoryActivity.this);
+                historyRecordTitle.setText(historyRecords.getString(1));
+                TextView historyRecordUrl = new TextView(HistoryActivity.this);
+                historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(historyRecordImg);
+                historyRecordLayout.addView(historyRecordTitle);
+                historyRecordLayout.addView(historyRecordUrl);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    String historyDate = historyRecords.getString(4).toString();
+                    Date currentDate = sdf.parse(historyDate);
+                    int result = sdf.parse(String.valueOf(currentDate.getYear()) + "/" + String.valueOf(currentDate.getMonth() - 1) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+                    if (result == 0) {
+
+                    } else if (result > 0) {
                         scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
-                        //                layoutOfHistoryRecords.addView(historyRecordLayout);
-                        if (!historyRecords.moveToNext()) {
-                            break;
-                        }
-//                    }
-//                } catch (ParseException e) {
-//                    Log.d("mytag", "ошибка парсинга даты");
-//                }
+                    } else if (result < 0) {
+
+                    }
+                } catch (ParseException e) {
+                    Log.d("mytag", "ошибка парсинга даты");
+                }
+                if (!historyRecords.moveToNext()) {
+                    break;
+                }
             }
 
             historyRecordLayout = new LinearLayout(HistoryActivity.this);
@@ -200,53 +217,59 @@ public class HistoryActivity extends AppCompatActivity {
             scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
             historyRecords.moveToFirst();
             while (true) {
-//                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                try {
-//                    int result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
-//                    if (result < 0) {
-                        historyRecordLayout = new LinearLayout(HistoryActivity.this);
-                        historyRecordLayout.setContentDescription(historyRecords.getString(2));
-                        historyRecordLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
-                                intent.putExtra("urlfromhistory", v.getContentDescription().toString());
-                                //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
-                                //                        intent.putExtra("urlfromhistory", "abc");
-                                HistoryActivity.this.startActivity(intent);
-                            }
-                        });
-                        ImageView historyRecordImg = new ImageView(HistoryActivity.this);
-                        historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-                        historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
+                historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                historyRecordLayout.setContentDescription(historyRecords.getString(2));
+                historyRecordLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                        intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+                        //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
+                        //                        intent.putExtra("urlfromhistory", "abc");
+                        HistoryActivity.this.startActivity(intent);
+                    }
+                });
+                ImageView historyRecordImg = new ImageView(HistoryActivity.this);
+                historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
 
-                        //                historyRecordImg.setImageResource(R.drawable.star);
-                        Bitmap uploadedImg = null;
-                        try {
-                            uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
-                        } catch (ExecutionException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        } catch (InterruptedException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        }
-                        historyRecordImg.setImageBitmap(uploadedImg);
+                //                historyRecordImg.setImageResource(R.drawable.star);
+                Bitmap uploadedImg = null;
+                try {
+                    uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
+                } catch (ExecutionException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                } catch (InterruptedException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                }
+                historyRecordImg.setImageBitmap(uploadedImg);
 
-                        TextView historyRecordTitle = new TextView(HistoryActivity.this);
-                        historyRecordTitle.setText(historyRecords.getString(1));
-                        TextView historyRecordUrl = new TextView(HistoryActivity.this);
-                        historyRecordUrl.setText(historyRecords.getString(2));
-                        historyRecordLayout.addView(historyRecordImg);
-                        historyRecordLayout.addView(historyRecordTitle);
-                        historyRecordLayout.addView(historyRecordUrl);
+                TextView historyRecordTitle = new TextView(HistoryActivity.this);
+                historyRecordTitle.setText(historyRecords.getString(1));
+                TextView historyRecordUrl = new TextView(HistoryActivity.this);
+                historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(historyRecordImg);
+                historyRecordLayout.addView(historyRecordTitle);
+                historyRecordLayout.addView(historyRecordUrl);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    String historyDate = historyRecords.getString(4).toString();
+                    Date currentDate = sdf.parse(historyDate);
+                    int result = sdf.parse(String.valueOf(currentDate.getYear()) + "/" + String.valueOf(currentDate.getMonth()) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+                    if (result == 0) {
+
+                    } else if (result > 0) {
                         scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
-                        //                layoutOfHistoryRecords.addView(historyRecordLayout);
-                        if (!historyRecords.moveToNext()) {
-                            break;
-                        }
-//                    }
-//                } catch (ParseException e) {
-//
-//                }
+                    } else if (result < 0) {
+
+                    }
+                } catch (ParseException e) {
+                    Log.d("mytag", "ошибка парсинга даты");
+                }
+                if (!historyRecords.moveToNext()) {
+                    break;
+                }
+
             }
             historyRecordLayout = new LinearLayout(HistoryActivity.this);
             historyRecordLayout.setOnClickListener(new View.OnClickListener() {
@@ -261,53 +284,58 @@ public class HistoryActivity extends AppCompatActivity {
             scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
             historyRecords.moveToFirst();
             while (true) {
-//                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                try {
-//                    int result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
-//                    if (result < 0) {
-                        historyRecordLayout = new LinearLayout(HistoryActivity.this);
-                        historyRecordLayout.setContentDescription(historyRecords.getString(2));
-                        historyRecordLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
-                                intent.putExtra("urlfromhistory", v.getContentDescription().toString());
-                                //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
-                                //                        intent.putExtra("urlfromhistory", "abc");
-                                HistoryActivity.this.startActivity(intent);
-                            }
-                        });
-                        ImageView historyRecordImg = new ImageView(HistoryActivity.this);
-                        historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-                        historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
+                historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                historyRecordLayout.setContentDescription(historyRecords.getString(2));
+                historyRecordLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                        intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+                        //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
+                        //                        intent.putExtra("urlfromhistory", "abc");
+                        HistoryActivity.this.startActivity(intent);
+                    }
+                });
+                ImageView historyRecordImg = new ImageView(HistoryActivity.this);
+                historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
 
-                        //                historyRecordImg.setImageResource(R.drawable.star);
-                        Bitmap uploadedImg = null;
-                        try {
-                            uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
-                        } catch (ExecutionException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        } catch (InterruptedException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        }
-                        historyRecordImg.setImageBitmap(uploadedImg);
+                //                historyRecordImg.setImageResource(R.drawable.star);
+                Bitmap uploadedImg = null;
+                try {
+                    uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
+                } catch (ExecutionException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                } catch (InterruptedException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                }
+                historyRecordImg.setImageBitmap(uploadedImg);
 
-                        TextView historyRecordTitle = new TextView(HistoryActivity.this);
-                        historyRecordTitle.setText(historyRecords.getString(1));
-                        TextView historyRecordUrl = new TextView(HistoryActivity.this);
-                        historyRecordUrl.setText(historyRecords.getString(2));
-                        historyRecordLayout.addView(historyRecordImg);
-                        historyRecordLayout.addView(historyRecordTitle);
-                        historyRecordLayout.addView(historyRecordUrl);
+                TextView historyRecordTitle = new TextView(HistoryActivity.this);
+                historyRecordTitle.setText(historyRecords.getString(1));
+                TextView historyRecordUrl = new TextView(HistoryActivity.this);
+                historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(historyRecordImg);
+                historyRecordLayout.addView(historyRecordTitle);
+                historyRecordLayout.addView(historyRecordUrl);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    String historyDate = historyRecords.getString(4).toString();
+                    Date currentDate = sdf.parse(historyDate);
+                    int result = sdf.parse(String.valueOf(currentDate.getYear()) + "/" + String.valueOf(currentDate.getMonth() - 1) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+                    if (result == 0) {
+
+                    } else if (result > 0) {
                         scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
-                        //                layoutOfHistoryRecords.addView(historyRecordLayout);
-                        if (!historyRecords.moveToNext()) {
-                            break;
-                        }
-//                    }
-//                } catch (ParseException e){
-//
-//                }
+                    } else if (result < 0) {
+
+                    }
+                } catch (ParseException e) {
+                    Log.d("mytag", "ошибка парсинга даты");
+                }
+                if (!historyRecords.moveToNext()) {
+                    break;
+                }
             }
             historyRecordLayout = new LinearLayout(HistoryActivity.this);
             historyRecordLayout.setOnClickListener(new View.OnClickListener() {
@@ -322,53 +350,58 @@ public class HistoryActivity extends AppCompatActivity {
             scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
             historyRecords.moveToFirst();
             while (true) {
-//                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                try {
-//                    int result = new Date().compareTo(sdf.parse(historyRecords.getString(4).toString()));
-//                    if (result < 0) {
-                        historyRecordLayout = new LinearLayout(HistoryActivity.this);
-                        historyRecordLayout.setContentDescription(historyRecords.getString(2));
-                        historyRecordLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
-                                intent.putExtra("urlfromhistory", v.getContentDescription().toString());
-                                //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
-                                //                        intent.putExtra("urlfromhistory", "abc");
-                                HistoryActivity.this.startActivity(intent);
-                            }
-                        });
-                        ImageView historyRecordImg = new ImageView(HistoryActivity.this);
-                        historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
-                        historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
+                historyRecordLayout = new LinearLayout(HistoryActivity.this);
+                historyRecordLayout.setContentDescription(historyRecords.getString(2));
+                historyRecordLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
+                        intent.putExtra("urlfromhistory", v.getContentDescription().toString());
+                        //                        intent.putExtra("urlfromhistory", String.valueOf(historyRecords.getString(1)));
+                        //                        intent.putExtra("urlfromhistory", "abc");
+                        HistoryActivity.this.startActivity(intent);
+                    }
+                });
+                ImageView historyRecordImg = new ImageView(HistoryActivity.this);
+                historyRecordImg.setLayoutParams(new ConstraintLayout.LayoutParams(175, 175));
+                historyRecordLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, 175));
 
-                        //                historyRecordImg.setImageResource(R.drawable.star);
-                        Bitmap uploadedImg = null;
-                        try {
-                            uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
-                        } catch (ExecutionException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        } catch (InterruptedException e) {
-                            Log.d("mytag", "Не могу обратиться к картинке");
-                        }
-                        historyRecordImg.setImageBitmap(uploadedImg);
+                //                historyRecordImg.setImageResource(R.drawable.star);
+                Bitmap uploadedImg = null;
+                try {
+                    uploadedImg = new FetchTask().execute(historyRecords.getString(3)).get();
+                } catch (ExecutionException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                } catch (InterruptedException e) {
+                    Log.d("mytag", "Не могу обратиться к картинке");
+                }
+                historyRecordImg.setImageBitmap(uploadedImg);
 
-                        TextView historyRecordTitle = new TextView(HistoryActivity.this);
-                        historyRecordTitle.setText(historyRecords.getString(1));
-                        TextView historyRecordUrl = new TextView(HistoryActivity.this);
-                        historyRecordUrl.setText(historyRecords.getString(2));
-                        historyRecordLayout.addView(historyRecordImg);
-                        historyRecordLayout.addView(historyRecordTitle);
-                        historyRecordLayout.addView(historyRecordUrl);
+                TextView historyRecordTitle = new TextView(HistoryActivity.this);
+                historyRecordTitle.setText(historyRecords.getString(1));
+                TextView historyRecordUrl = new TextView(HistoryActivity.this);
+                historyRecordUrl.setText(historyRecords.getString(2));
+                historyRecordLayout.addView(historyRecordImg);
+                historyRecordLayout.addView(historyRecordTitle);
+                historyRecordLayout.addView(historyRecordUrl);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                try {
+                    String historyDate = historyRecords.getString(4).toString();
+                    Date currentDate = sdf.parse(historyDate);
+                    int result = sdf.parse(String.valueOf(currentDate.getYear() - 1) + "/" + String.valueOf(currentDate.getMonth()) + "/" + String.valueOf(currentDate.getDate())).compareTo(currentDate);
+                    if (result == 0) {
+
+                    } else if (result > 0) {
                         scrollLayoutOfHistoryRecords.addView(historyRecordLayout);
-                        //                layoutOfHistoryRecords.addView(historyRecordLayout);
-                        if (!historyRecords.moveToNext()) {
-                            break;
-                        }
-//                    }
-//                } catch(ParseException e){
-//
-//                }
+                    } else if (result < 0) {
+
+                    }
+                } catch (ParseException e) {
+                    Log.d("mytag", "ошибка парсинга даты");
+                }
+                if (!historyRecords.moveToNext()) {
+                    break;
+                }
             }
         }
 

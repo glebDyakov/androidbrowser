@@ -437,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 db.execSQL("INSERT INTO \"bookmarks\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+                                dialog.hide();
                             }
                         });
                         TextView addPageFastAccess = new TextView(MainActivity.this);
@@ -447,6 +448,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 db.execSQL("INSERT INTO \"savepages\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+                                dialog.hide();
                             }
                         });
                         TextView addPageScreenApps = new TextView(MainActivity.this);
@@ -457,6 +459,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 db.execSQL("INSERT INTO \"savepages\"(title, url) VALUES (\"" + myWebView.getTitle() + "\", \"" + myWebView.getUrl() + "\");");
+                                dialog.hide();
                             }
                         });
                         TextView addPageSavePages = new TextView(MainActivity.this);
